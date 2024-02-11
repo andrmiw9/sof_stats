@@ -1,10 +1,53 @@
 """
 Основной скрипт для запуска
 SOF_stats - Маркин Андрей, 02.2024
+тестовый запрос:
+http://127.0.0.1:7006/search?tag=closure&tag=python&smth=foo&tag=Русский2
+
+requirements:
+annotated-types==0.6.0
+anyio==4.2.0
+certifi==2024.2.2
+click==8.1.7
+colorama==0.4.6
+fastapi==0.109.2
+h11==0.14.0
+httpcore==1.0.2
+httpx==0.26.0
+idna==3.6
+loguru==0.7.2
+pydantic==2.6.1
+pydantic_core==2.16.2
+sniffio==1.3.0
+starlette==0.36.3
+typing_extensions==4.9.0
+uvicorn==0.27.0.post1
+win32-setctime==1.1.0
+
+config_default:
+[app]
+#project_path = 'opt/vox_message'
+self_api_port = 7006 # порт фаст апи
+self_api_host = "127.0.0.1" # адрес фаст апи бэка
+env_mode = "TEST" # окружение для запуска
+stop_delay = 4 # задержка перед закрытием
+
+[network]
+max_requests = 1 # максимальное количество запросов к stackoverflow
+max_alive_requests = 1  # максимальное количество активных (keep-alive) запросов к stackoverflow
+keep_alive = 5 # время в секундах для keep-alive
+
+[logger]
+log_console = true # дублировать логи в консоль
+debug_mode = true # выводить уровень DEBUG (или TRACE)
+rotation_size = "250 MB" # размер лога для начала ротации
+retention_time = 5 # время в днях до начала ротации
+
 """
 import asyncio
 import os
 import tomllib
+import typing
 
 import httpx
 import loguru
@@ -186,7 +229,7 @@ def logger_set_up(_settings, logs_path: str = "logs/vox_message.log"):
 # endregion
 
 # region Requests
-async def search_sof_questions(query_tag: str) -> dict | None:
+async def search_sof_questions(query_tag: str) -> typing.Any | None:
     """ Search stackoverflow questions """
     try:
         if not query_tag:
@@ -286,7 +329,7 @@ def normal_app() -> FastAPI:
     @fastapi_app.post('/search')
     async def search(tag: List[str] = Query()):
         """
-
+        Standard stackoverflow for received tags
         :param tag:
         :return:
         """

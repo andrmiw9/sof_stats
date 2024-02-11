@@ -260,3 +260,21 @@
 2024-02-11 23:19:22.389[INFO][None]mdlwr:271 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
 2024-02-11 23:19:22.529[DEBUG][None]mdlwr:275 - Request time took 0:00:00.139126 seconds
 2024-02-11 23:19:25.169[INFO][None]app_shutdown:241 - app_shutdown
+2024-02-11 23:30:44.893[INFO][Run main]main:359 - SETTINGS PARSED
+2024-02-11 23:30:44.893[HL][Run main]main:360 - Test highlighting!
+2024-02-11 23:30:45.276[INFO][Startup]app_startup:233 - app_startup
+2024-02-11 23:30:46.795[INFO][None]mdlwr:271 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 23:30:47.502[DEBUG][None]mdlwr:275 - Request time took 0:00:00.706760 seconds
+2024-02-11 23:30:49.372[INFO][None]app_shutdown:241 - app_shutdown
+2024-02-11 23:31:13.254[INFO][Run main]main:359 - SETTINGS PARSED
+2024-02-11 23:31:13.254[HL][Run main]main:360 - Test highlighting!
+2024-02-11 23:31:13.639[INFO][Startup]app_startup:233 - app_startup
+2024-02-11 23:31:15.763[INFO][None]mdlwr:271 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 23:31:16.293[DEBUG][None]mdlwr:275 - Request time took 0:00:00.530482 seconds
+2024-02-11 23:31:18.166[INFO][None]app_shutdown:241 - app_shutdown
+2024-02-11 23:34:26.085[INFO][Run main]main:359 - SETTINGS PARSED
+2024-02-11 23:34:26.086[HL][Run main]main:360 - Test highlighting!
+2024-02-11 23:34:26.460[INFO][Startup]app_startup:233 - app_startup
+2024-02-11 23:34:27.419[INFO][None]mdlwr:271 - Incoming request: /search?tag=python&smth=foo
+2024-02-11 23:34:28.289[DEBUG][None]mdlwr:275 - Request time took 0:00:00.869892 seconds
+2024-02-11 23:34:30.491[INFO][None]app_shutdown:241 - app_shutdown
