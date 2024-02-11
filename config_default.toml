@@ -1,0 +1,17 @@
+[app]
+#project_path = 'opt/vox_message'
+self_api_port = 7006 # порт фаст апи
+self_api_host = "127.0.0.1" # адрес фаст апи бэка
+env_mode = "TEST" # окружение для запуска
+stop_delay = 4 # задержка перед закрытием
+
+[network]
+max_requests = 1 # максимальное количество запросов к stackoverflow
+max_alive_requests = 1  # максимальное количество активных (keep-alive) запросов к stackoverflow
+keep_alive = 5 # время в секундах для keep-alive
+
+[logger]
+log_console = true # дублировать логи в консоль
+debug_mode = true # выводить уровень DEBUG (или TRACE)
+rotation_size = "250 MB" # размер лога для начала ротации
+retention_time = 5 # время в днях до начала ротации

@@ -1,0 +1,262 @@
+2024-02-10 21:59:41.056[INFO][Run main]main:323 - SETTINGS PARSED
+2024-02-10 21:59:41.056[HL][Run main]main:324 - Test highlighting!
+2024-02-10 21:59:41.076[INFO][Startup]app_startup:184 - app_startup
+2024-02-10 22:00:07.478[INFO][None]mdlwr:222 - Incoming request: /diag
+2024-02-10 22:00:07.479[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:00:10.184[INFO][None]mdlwr:222 - Incoming request: /diag
+2024-02-10 22:00:10.184[DEBUG][None]mdlwr:226 - Request time took 0:00:00 seconds
+2024-02-10 22:00:24.547[INFO][None]mdlwr:222 - Incoming request: /diag
+2024-02-10 22:00:24.548[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:20:17.586[INFO][Run main]main:326 - SETTINGS PARSED
+2024-02-10 22:20:17.586[HL][Run main]main:327 - Test highlighting!
+2024-02-10 22:20:17.607[INFO][Startup]app_startup:184 - app_startup
+2024-02-10 22:20:23.124[INFO][None]mdlwr:222 - Incoming request: /diag
+2024-02-10 22:20:23.124[DEBUG][None]mdlwr:226 - Request time took 0:00:00 seconds
+2024-02-10 22:20:27.438[INFO][None]mdlwr:222 - Incoming request: /diag
+2024-02-10 22:20:27.440[DEBUG][None]mdlwr:226 - Request time took 0:00:00.002002 seconds
+2024-02-10 22:20:35.692[INFO][None]mdlwr:222 - Incoming request: /diag
+2024-02-10 22:20:35.692[DEBUG][None]mdlwr:226 - Request time took 0:00:00 seconds
+2024-02-10 22:29:30.751[INFO][Run main]main:330 - SETTINGS PARSED
+2024-02-10 22:29:30.752[HL][Run main]main:331 - Test highlighting!
+2024-02-10 22:29:30.772[INFO][Startup]app_startup:184 - app_startup
+2024-02-10 22:29:51.310[INFO][Run main]main:330 - SETTINGS PARSED
+2024-02-10 22:29:51.310[HL][Run main]main:331 - Test highlighting!
+2024-02-10 22:29:51.332[INFO][Startup]app_startup:184 - app_startup
+2024-02-10 22:29:57.285[INFO][None]mdlwr:222 - Incoming request: /search
+2024-02-10 22:29:57.285[DEBUG][None]mdlwr:226 - Request time took 0:00:00 seconds
+2024-02-10 22:29:57.289[INFO][None]mdlwr:222 - Incoming request: /search
+2024-02-10 22:29:57.291[DEBUG][None]mdlwr:226 - Request time took 0:00:00.002002 seconds
+2024-02-10 22:30:12.320[INFO][None]app_shutdown:192 - app_shutdown
+2024-02-10 22:31:18.004[INFO][Run main]main:330 - SETTINGS PARSED
+2024-02-10 22:31:18.004[HL][Run main]main:331 - Test highlighting!
+2024-02-10 22:31:18.025[INFO][Startup]app_startup:184 - app_startup
+2024-02-10 22:31:19.749[INFO][None]mdlwr:222 - Incoming request: /search
+2024-02-10 22:31:19.750[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001002 seconds
+2024-02-10 22:31:19.754[INFO][None]mdlwr:222 - Incoming request: /search
+2024-02-10 22:31:19.755[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001002 seconds
+2024-02-10 22:31:22.903[INFO][None]mdlwr:222 - Incoming request: /search
+2024-02-10 22:31:22.903[DEBUG][None]mdlwr:226 - Request time took 0:00:00 seconds
+2024-02-10 22:31:22.905[INFO][None]mdlwr:222 - Incoming request: /search
+2024-02-10 22:31:22.906[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:31:32.147[INFO][None]mdlwr:222 - Incoming request: /search?12
+2024-02-10 22:31:32.148[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:31:32.151[INFO][None]mdlwr:222 - Incoming request: /search?12
+2024-02-10 22:31:32.152[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:36:00.724[INFO][Run main]main:330 - SETTINGS PARSED
+2024-02-10 22:36:00.725[HL][Run main]main:331 - Test highlighting!
+2024-02-10 22:36:00.745[INFO][Startup]app_startup:184 - app_startup
+2024-02-10 22:36:04.091[INFO][None]mdlwr:222 - Incoming request: /search?12
+2024-02-10 22:36:04.092[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:36:04.096[INFO][None]mdlwr:222 - Incoming request: /search?12
+2024-02-10 22:36:04.097[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:37:49.702[INFO][None]mdlwr:222 - Incoming request: /search?tag=closure
+2024-02-10 22:37:49.702[DEBUG][None]mdlwr:226 - Request time took 0:00:00 seconds
+2024-02-10 22:37:49.705[INFO][None]mdlwr:222 - Incoming request: /search?tag=closure
+2024-02-10 22:37:49.706[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:37:58.300[INFO][None]mdlwr:222 - Incoming request: /search?tag=closure&tag=python
+2024-02-10 22:37:58.300[DEBUG][None]mdlwr:226 - Request time took 0:00:00 seconds
+2024-02-10 22:37:58.304[INFO][None]mdlwr:222 - Incoming request: /search?tag=closure&tag=python
+2024-02-10 22:37:58.305[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:38:14.297[INFO][None]mdlwr:222 - Incoming request: /search?tag=closure&tag=python
+2024-02-10 22:38:14.298[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001002 seconds
+2024-02-10 22:38:28.180[INFO][None]app_shutdown:192 - app_shutdown
+2024-02-10 22:38:35.204[INFO][Run main]main:330 - SETTINGS PARSED
+2024-02-10 22:38:35.205[HL][Run main]main:331 - Test highlighting!
+2024-02-10 22:38:35.224[INFO][Startup]app_startup:184 - app_startup
+2024-02-10 22:38:37.123[INFO][None]mdlwr:222 - Incoming request: /search?tag=closure&tag=python
+2024-02-10 22:38:37.124[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:38:39.665[INFO][None]mdlwr:222 - Incoming request: /search?tag=closure&tag=python
+2024-02-10 22:38:39.666[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:38:48.861[INFO][None]app_shutdown:192 - app_shutdown
+2024-02-10 22:39:21.002[INFO][Run main]main:330 - SETTINGS PARSED
+2024-02-10 22:39:21.002[HL][Run main]main:331 - Test highlighting!
+2024-02-10 22:39:21.025[INFO][Startup]app_startup:184 - app_startup
+2024-02-10 22:39:23.856[INFO][None]mdlwr:222 - Incoming request: /search?tag=closure&tag=python
+2024-02-10 22:39:23.857[DEBUG][None]mdlwr:226 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:41:08.395[INFO][Run main]main:331 - SETTINGS PARSED
+2024-02-10 22:41:08.395[HL][Run main]main:332 - Test highlighting!
+2024-02-10 22:41:08.417[INFO][Startup]app_startup:185 - app_startup
+2024-02-10 22:41:10.402[INFO][None]mdlwr:223 - Incoming request: /search?tag=closure&tag=python
+2024-02-10 22:41:10.403[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001000 seconds
+2024-02-10 22:41:12.723[INFO][None]app_shutdown:193 - app_shutdown
+2024-02-10 22:41:51.285[INFO][Run main]main:331 - SETTINGS PARSED
+2024-02-10 22:41:51.286[HL][Run main]main:332 - Test highlighting!
+2024-02-10 22:41:51.306[INFO][Startup]app_startup:185 - app_startup
+2024-02-10 22:41:54.514[INFO][None]mdlwr:223 - Incoming request: /search?tag=closure&tag=python
+2024-02-10 22:41:54.515[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:42:04.204[INFO][None]mdlwr:223 - Incoming request: /search?tag=closure&tag=python&smth=foo
+2024-02-10 22:42:04.205[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:50:28.734[INFO][Run main]main:333 - SETTINGS PARSED
+2024-02-10 22:50:28.734[HL][Run main]main:334 - Test highlighting!
+2024-02-10 22:50:28.755[INFO][Startup]app_startup:185 - app_startup
+2024-02-10 22:50:28.969[INFO][None]mdlwr:223 - Incoming request: /
+2024-02-10 22:50:28.970[WARNING][None]custom_404_handler:312 - content={'res': 'Error', 'msg': 'Not found GET API handler for http://127.0.0.1:7006/'}
+2024-02-10 22:50:28.971[DEBUG][None]mdlwr:227 - Request time took 0:00:00.002001 seconds
+2024-02-10 22:50:29.258[INFO][None]mdlwr:223 - Incoming request: /favicon.ico
+2024-02-10 22:50:29.259[WARNING][None]custom_404_handler:312 - content={'res': 'Error', 'msg': 'Not found GET API handler for http://127.0.0.1:7006/favicon.ico'}
+2024-02-10 22:50:29.259[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001000 seconds
+2024-02-10 22:50:31.321[INFO][None]mdlwr:223 - Incoming request: /
+2024-02-10 22:50:31.322[WARNING][None]custom_404_handler:312 - content={'res': 'Error', 'msg': 'Not found GET API handler for http://127.0.0.1:7006/'}
+2024-02-10 22:50:31.323[DEBUG][None]mdlwr:227 - Request time took 0:00:00.002002 seconds
+2024-02-10 22:50:36.236[INFO][None]mdlwr:223 - Incoming request: /docs
+2024-02-10 22:50:36.237[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001000 seconds
+2024-02-10 22:50:36.514[INFO][None]mdlwr:223 - Incoming request: /openapi.json
+2024-02-10 22:50:36.518[DEBUG][None]mdlwr:227 - Request time took 0:00:00.004004 seconds
+2024-02-10 22:51:24.449[INFO][None]mdlwr:223 - Incoming request: /docs
+2024-02-10 22:51:24.450[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:51:24.787[INFO][None]mdlwr:223 - Incoming request: /openapi.json
+2024-02-10 22:51:24.787[DEBUG][None]mdlwr:227 - Request time took 0:00:00 seconds
+2024-02-10 22:51:31.888[INFO][None]mdlwr:223 - Incoming request: /search?tag=stringwada&tag=stringwadaw
+2024-02-10 22:51:31.889[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:51:36.571[INFO][None]mdlwr:223 - Incoming request: /search?tag=stringwada&tag=stringwadaw
+2024-02-10 22:51:36.572[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:51:38.434[INFO][None]mdlwr:223 - Incoming request: /search?tag=stringwada&tag=stringwadawww
+2024-02-10 22:51:38.435[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001000 seconds
+2024-02-10 22:52:41.167[INFO][None]mdlwr:223 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-10 22:52:41.168[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001000 seconds
+2024-02-10 22:52:43.217[INFO][None]mdlwr:223 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-10 22:52:43.218[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001001 seconds
+2024-02-10 22:53:01.482[INFO][Run main]main:333 - SETTINGS PARSED
+2024-02-10 22:53:01.482[HL][Run main]main:334 - Test highlighting!
+2024-02-10 22:53:01.502[INFO][Startup]app_startup:185 - app_startup
+2024-02-10 22:53:04.927[INFO][None]mdlwr:223 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-10 22:53:04.928[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001001 seconds
+2024-02-10 23:10:45.042[INFO][None]mdlwr:223 - Incoming request: /diag
+2024-02-10 23:10:45.043[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001000 seconds
+2024-02-10 23:10:46.787[INFO][None]mdlwr:223 - Incoming request: /diag
+2024-02-10 23:10:46.788[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001001 seconds
+2024-02-10 23:10:51.437[INFO][None]mdlwr:223 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-10 23:10:51.438[DEBUG][None]mdlwr:227 - Request time took 0:00:00.001001 seconds
+2024-02-11 20:53:13.571[INFO][Run main]main:319 - SETTINGS PARSED
+2024-02-11 20:53:13.572[HL][Run main]main:320 - Test highlighting!
+2024-02-11 20:53:13.599[INFO][Startup]app_startup:196 - app_startup
+2024-02-11 20:53:16.705[INFO][None]mdlwr:234 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 20:53:59.355[INFO][None]app_shutdown:204 - app_shutdown
+2024-02-11 20:54:00.168[INFO][Run main]main:319 - SETTINGS PARSED
+2024-02-11 20:54:00.169[HL][Run main]main:320 - Test highlighting!
+2024-02-11 20:55:03.665[INFO][Run main]main:321 - SETTINGS PARSED
+2024-02-11 20:55:03.666[HL][Run main]main:322 - Test highlighting!
+2024-02-11 20:55:03.686[INFO][Startup]app_startup:198 - app_startup
+2024-02-11 20:55:06.090[INFO][None]mdlwr:236 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 20:56:57.024[INFO][Run main]main:321 - SETTINGS PARSED
+2024-02-11 20:56:57.024[HL][Run main]main:322 - Test highlighting!
+2024-02-11 20:56:57.044[INFO][Startup]app_startup:198 - app_startup
+2024-02-11 20:57:00.999[INFO][None]mdlwr:236 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:04:54.603[INFO][Run main]main:324 - SETTINGS PARSED
+2024-02-11 21:04:54.603[HL][Run main]main:325 - Test highlighting!
+2024-02-11 21:04:55.017[INFO][Startup]app_startup:201 - app_startup
+2024-02-11 21:04:56.661[INFO][None]mdlwr:239 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:05:05.621[INFO][None]app_shutdown:209 - app_shutdown
+2024-02-11 21:05:06.478[INFO][Run main]main:322 - SETTINGS PARSED
+2024-02-11 21:05:06.478[HL][Run main]main:323 - Test highlighting!
+2024-02-11 21:05:06.909[INFO][Startup]app_startup:199 - app_startup
+2024-02-11 21:05:08.570[INFO][None]mdlwr:237 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:05:08.571[DEBUG][None]mdlwr:241 - Request time took 0:00:00.001002 seconds
+2024-02-11 21:05:12.853[INFO][None]app_shutdown:207 - app_shutdown
+2024-02-11 21:07:26.074[INFO][Run main]main:326 - SETTINGS PARSED
+2024-02-11 21:07:26.075[HL][Run main]main:327 - Test highlighting!
+2024-02-11 21:07:26.441[INFO][Startup]app_startup:202 - app_startup
+2024-02-11 21:07:29.746[INFO][None]mdlwr:240 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:07:31.003[DEBUG][None]mdlwr:244 - Request time took 0:00:01.257378 seconds
+2024-02-11 21:07:40.874[INFO][None]app_shutdown:210 - app_shutdown
+2024-02-11 21:19:12.432[INFO][Run main]main:344 - SETTINGS PARSED
+2024-02-11 21:19:12.433[HL][Run main]main:345 - Test highlighting!
+2024-02-11 21:19:49.334[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:19:49.335[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:19:49.718[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:19:59.993[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:19:59.993[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:20:00.364[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:20:03.927[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:20:04.800[DEBUG][None]mdlwr:265 - Request time took 0:00:00.873166 seconds
+2024-02-11 21:20:14.419[INFO][None]app_shutdown:231 - app_shutdown
+2024-02-11 21:21:24.517[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:21:24.517[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:21:24.915[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:21:26.655[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:21:27.481[DEBUG][None]mdlwr:265 - Request time took 0:00:00.826751 seconds
+2024-02-11 21:22:06.153[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:22:07.009[DEBUG][None]mdlwr:265 - Request time took 0:00:00.855883 seconds
+2024-02-11 21:22:09.767[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:22:10.224[DEBUG][None]mdlwr:265 - Request time took 0:00:00.456961 seconds
+2024-02-11 21:22:10.453[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B92
+2024-02-11 21:22:10.454[DEBUG][None]mdlwr:265 - Request time took 0:00:00.001001 seconds
+2024-02-11 21:22:10.868[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B93
+2024-02-11 21:22:10.868[DEBUG][None]mdlwr:265 - Request time took 0:00:00 seconds
+2024-02-11 21:22:23.539[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:22:23.812[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B92
+2024-02-11 21:22:24.280[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B93
+2024-02-11 21:22:24.827[DEBUG][None]mdlwr:265 - Request time took 0:00:01.288327 seconds
+2024-02-11 21:22:24.960[DEBUG][None]mdlwr:265 - Request time took 0:00:01.148146 seconds
+2024-02-11 21:22:25.260[DEBUG][None]mdlwr:265 - Request time took 0:00:00.980998 seconds
+2024-02-11 21:22:43.876[INFO][None]app_shutdown:231 - app_shutdown
+2024-02-11 21:22:44.601[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:22:44.601[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:22:44.971[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:22:49.460[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:22:49.850[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B92
+2024-02-11 21:22:50.163[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B93
+2024-02-11 21:22:53.190[DEBUG][None]mdlwr:265 - Request time took 0:00:03.730858 seconds
+2024-02-11 21:22:53.384[DEBUG][None]mdlwr:265 - Request time took 0:00:03.533517 seconds
+2024-02-11 21:22:53.571[DEBUG][None]mdlwr:265 - Request time took 0:00:03.407847 seconds
+2024-02-11 21:23:00.884[INFO][None]app_shutdown:231 - app_shutdown
+2024-02-11 21:23:07.669[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:23:07.669[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:23:08.051[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:23:11.359[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:23:11.746[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B92
+2024-02-11 21:23:12.388[INFO][None]mdlwr:261 - Incoming request: /diag
+2024-02-11 21:23:12.388[DEBUG][None]mdlwr:265 - Request time took 0:00:00 seconds
+2024-02-11 21:23:13.524[DEBUG][None]mdlwr:265 - Request time took 0:00:02.165290 seconds
+2024-02-11 21:23:14.174[DEBUG][None]mdlwr:265 - Request time took 0:00:02.428117 seconds
+2024-02-11 21:23:16.021[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:23:16.459[DEBUG][None]mdlwr:265 - Request time took 0:00:00.437955 seconds
+2024-02-11 21:23:16.618[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B92
+2024-02-11 21:23:16.916[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B93
+2024-02-11 21:23:17.780[DEBUG][None]mdlwr:265 - Request time took 0:00:01.161782 seconds
+2024-02-11 21:23:19.525[DEBUG][None]mdlwr:265 - Request time took 0:00:02.609188 seconds
+2024-02-11 21:23:28.333[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:23:28.333[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:23:28.738[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:23:32.408[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 21:23:32.778[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B92
+2024-02-11 21:23:33.017[INFO][None]mdlwr:261 - Incoming request: /search?tag=closure&tag=python&smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B93
+2024-02-11 21:23:35.020[DEBUG][None]mdlwr:265 - Request time took 0:00:02.612459 seconds
+2024-02-11 21:23:35.554[DEBUG][None]mdlwr:265 - Request time took 0:00:02.776170 seconds
+2024-02-11 21:23:35.971[DEBUG][None]mdlwr:265 - Request time took 0:00:02.954105 seconds
+2024-02-11 21:23:54.664[INFO][None]app_shutdown:231 - app_shutdown
+2024-02-11 21:24:24.793[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:24:24.794[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:24:25.169[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:24:26.932[INFO][None]app_shutdown:231 - app_shutdown
+2024-02-11 21:24:31.399[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:24:31.399[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:24:31.774[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:24:33.210[INFO][None]app_shutdown:231 - app_shutdown
+2024-02-11 21:24:51.907[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:24:51.908[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:24:52.284[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:24:55.808[INFO][None]app_shutdown:231 - app_shutdown
+2024-02-11 21:25:17.703[INFO][Run main]main:347 - SETTINGS PARSED
+2024-02-11 21:25:17.704[HL][Run main]main:348 - Test highlighting!
+2024-02-11 21:25:18.076[INFO][Startup]app_startup:223 - app_startup
+2024-02-11 21:25:21.166[INFO][None]app_shutdown:231 - app_shutdown
+2024-02-11 22:01:53.722[INFO][Run main]main:350 - SETTINGS PARSED
+2024-02-11 22:01:53.722[HL][Run main]main:351 - Test highlighting!
+2024-02-11 22:01:54.103[INFO][Startup]app_startup:226 - app_startup
+2024-02-11 22:01:56.906[INFO][None]mdlwr:264 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 22:01:57.650[DEBUG][None]mdlwr:268 - Request time took 0:00:00.743727 seconds
+2024-02-11 22:01:59.828[INFO][None]app_shutdown:234 - app_shutdown
+2024-02-11 23:18:48.101[INFO][Run main]main:359 - SETTINGS PARSED
+2024-02-11 23:18:48.101[HL][Run main]main:360 - Test highlighting!
+2024-02-11 23:18:48.499[INFO][Startup]app_startup:233 - app_startup
+2024-02-11 23:18:51.619[INFO][None]mdlwr:271 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 23:18:58.860[INFO][None]app_shutdown:241 - app_shutdown
+2024-02-11 23:19:16.107[INFO][Run main]main:359 - SETTINGS PARSED
+2024-02-11 23:19:16.108[HL][Run main]main:360 - Test highlighting!
+2024-02-11 23:19:16.489[INFO][Startup]app_startup:233 - app_startup
+2024-02-11 23:19:18.056[INFO][None]mdlwr:271 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 23:19:18.570[DEBUG][None]mdlwr:275 - Request time took 0:00:00.514062 seconds
+2024-02-11 23:19:22.389[INFO][None]mdlwr:271 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-11 23:19:22.529[DEBUG][None]mdlwr:275 - Request time took 0:00:00.139126 seconds
+2024-02-11 23:19:25.169[INFO][None]app_shutdown:241 - app_shutdown
