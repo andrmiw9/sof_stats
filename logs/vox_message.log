@@ -278,3 +278,25 @@
 2024-02-11 23:34:27.419[INFO][None]mdlwr:271 - Incoming request: /search?tag=python&smth=foo
 2024-02-11 23:34:28.289[DEBUG][None]mdlwr:275 - Request time took 0:00:00.869892 seconds
 2024-02-11 23:34:30.491[INFO][None]app_shutdown:241 - app_shutdown
+2024-02-12 18:39:43.949[INFO][Run main]main:402 - SETTINGS PARSED
+2024-02-12 18:39:43.949[HL][Run main]main:403 - Test highlighting!
+2024-02-12 18:39:44.707[INFO][Startup]app_startup:276 - app_startup
+2024-02-12 18:39:53.282[INFO][None]mdlwr:314 - Incoming request: /diag
+2024-02-12 18:39:53.284[DEBUG][None]mdlwr:318 - Request time took 0:00:00.001996 seconds
+2024-02-12 18:39:55.240[INFO][None]mdlwr:314 - Incoming request: /diag
+2024-02-12 18:39:55.241[DEBUG][None]mdlwr:318 - Request time took 0:00:00.000997 seconds
+2024-02-12 18:39:56.157[INFO][None]mdlwr:314 - Incoming request: /diag
+2024-02-12 18:39:56.158[DEBUG][None]mdlwr:318 - Request time took 0:00:00.000998 seconds
+2024-02-12 18:40:04.682[INFO][None]mdlwr:314 - Incoming request: /search?tag=python&smth=foo
+2024-02-12 18:40:04.898[ERROR][None]search_sof_questions:253 - ValueError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)
+2024-02-12 18:40:04.899[DEBUG][None]mdlwr:318 - Request time took 0:00:00.216745 seconds
+2024-02-12 18:40:07.847[INFO][None]app_shutdown:284 - app_shutdown
+2024-02-12 18:40:33.681[INFO][Run main]main:402 - SETTINGS PARSED
+2024-02-12 18:40:33.681[HL][Run main]main:403 - Test highlighting!
+2024-02-12 18:40:33.700[INFO][Startup]app_startup:276 - app_startup
+2024-02-12 18:40:36.170[INFO][Run main]main:402 - SETTINGS PARSED
+2024-02-12 18:40:36.171[HL][Run main]main:403 - Test highlighting!
+2024-02-12 18:40:36.192[INFO][Startup]app_startup:276 - app_startup
+2024-02-12 18:40:38.144[INFO][None]mdlwr:314 - Incoming request: /search?tag=python&smth=foo
+2024-02-12 18:40:39.160[DEBUG][None]mdlwr:318 - Request time took 0:00:01.016574 seconds
+2024-02-12 18:40:42.421[INFO][None]app_shutdown:284 - app_shutdown

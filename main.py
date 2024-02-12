@@ -239,10 +239,10 @@ async def search_sof_questions(query_tag: str) -> typing.Any | None:
         response = await aclient.get("https://api.stackexchange.com/2.3/search",
                                      params={
                                          "pagesize": 100,
-                                         "order"   : "desc",
-                                         "sort"    : "creation",
-                                         "intitle" : query_tag,
-                                         "site"    : "stackoverflow"
+                                         "order": "desc",
+                                         "sort": "creation",
+                                         "intitle": query_tag,
+                                         "site": "stackoverflow"
                                      })
         response.raise_for_status()
     except httpx.HTTPStatusError as e:
@@ -362,10 +362,10 @@ def normal_app() -> FastAPI:
         delta = f"{delta.days}:{hour_count}:{minute_count}:{second_count}"
 
         response = {
-            "res"       : "ok",
-            "app"       : f'{settings.service_name}',
-            "version"   : f'{settings.version}',
-            "uptime"    : delta,
+            "res": "ok",
+            "app": f'{settings.service_name}',
+            "version": f'{settings.version}',
+            "uptime": delta,
             "is_running": is_running
         }
         return response
@@ -416,7 +416,8 @@ def main():
                           max_keepalive_connections=settings.max_alive_requests,
                           keepalive_expiry=settings.keep_alive)
     global aclient
-    aclient = httpx.AsyncClient(limits=limits)
+    # aclient = httpx.AsyncClient(limits=limits, verify=True)
+    aclient = httpx.AsyncClient(limits=limits, verify=False)
 
     try:
         # disabled duplicate logs (uvicorn logs)
