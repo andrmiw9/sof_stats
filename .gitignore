@@ -2,3 +2,5 @@
 venv
 logs
 .idea
+.xml
+.iml
