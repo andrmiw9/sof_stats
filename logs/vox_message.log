@@ -300,3 +300,81 @@
 2024-02-12 18:40:38.144[INFO][None]mdlwr:314 - Incoming request: /search?tag=python&smth=foo
 2024-02-12 18:40:39.160[DEBUG][None]mdlwr:318 - Request time took 0:00:01.016574 seconds
 2024-02-12 18:40:42.421[INFO][None]app_shutdown:284 - app_shutdown
+2024-02-13 15:13:49.200[INFO][Run main]main:402 - SETTINGS PARSED
+2024-02-13 15:13:49.200[HL][Run main]main:403 - Test highlighting!
+2024-02-13 15:13:49.218[INFO][Startup]app_startup:276 - app_startup
+2024-02-13 15:14:08.781[INFO][None]mdlwr:314 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-13 15:14:13.788[ERROR][None]search_sof_questions:251 - HTTPError: 
+2024-02-13 15:14:13.790[DEBUG][None]mdlwr:318 - Request time took 0:00:05.009146 seconds
+2024-02-13 15:14:19.807[INFO][None]mdlwr:314 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 15:14:24.823[ERROR][None]search_sof_questions:251 - HTTPError: 
+2024-02-13 15:14:24.824[DEBUG][None]mdlwr:318 - Request time took 0:00:05.016839 seconds
+2024-02-13 15:14:32.395[INFO][None]app_shutdown:284 - app_shutdown
+2024-02-13 15:14:45.864[INFO][Run main]main:402 - SETTINGS PARSED
+2024-02-13 15:14:45.864[HL][Run main]main:403 - Test highlighting!
+2024-02-13 15:14:45.879[INFO][Startup]app_startup:276 - app_startup
+2024-02-13 15:14:49.019[INFO][None]mdlwr:314 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 15:14:54.037[ERROR][None]search_sof_questions:251 - HTTPError: 
+2024-02-13 15:14:54.038[DEBUG][None]mdlwr:318 - Request time took 0:00:05.019144 seconds
+2024-02-13 15:14:57.063[INFO][None]app_shutdown:284 - app_shutdown
+2024-02-13 15:25:01.635[INFO][Run main]main:402 - SETTINGS PARSED
+2024-02-13 15:25:01.635[HL][Run main]main:403 - Test highlighting!
+2024-02-13 15:25:01.654[INFO][Startup]app_startup:276 - app_startup
+2024-02-13 15:25:09.269[INFO][None]mdlwr:314 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 15:25:14.275[ERROR][None]search_sof_questions:251 - HTTPError: 
+2024-02-13 15:25:14.276[DEBUG][None]mdlwr:318 - Request time took 0:00:05.007204 seconds
+2024-02-13 15:28:12.781[INFO][Run main]main:404 - SETTINGS PARSED
+2024-02-13 15:28:12.782[HL][Run main]main:405 - Test highlighting!
+2024-02-13 15:28:12.799[INFO][Startup]app_startup:278 - app_startup
+2024-02-13 15:28:16.004[INFO][None]mdlwr:316 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 15:28:21.017[ERROR][None]search_sof_questions:251 - RequestError: 
+2024-02-13 15:28:21.018[DEBUG][None]mdlwr:320 - Request time took 0:00:05.013181 seconds
+2024-02-13 17:56:50.484[INFO][Run main]main:404 - SETTINGS PARSED
+2024-02-13 17:56:50.485[HL][Run main]main:405 - Test highlighting!
+2024-02-13 17:56:50.531[INFO][Startup]app_startup:278 - app_startup
+2024-02-13 17:56:52.619[INFO][None]mdlwr:316 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 17:56:53.827[DEBUG][None]mdlwr:320 - Request time took 0:00:01.207849 seconds
+2024-02-13 17:57:09.407[INFO][None]app_shutdown:286 - app_shutdown
+2024-02-13 17:57:16.286[INFO][Run main]main:404 - SETTINGS PARSED
+2024-02-13 17:57:16.286[HL][Run main]main:405 - Test highlighting!
+2024-02-13 17:57:16.941[INFO][Startup]app_startup:278 - app_startup
+2024-02-13 17:57:18.115[INFO][None]mdlwr:316 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 17:57:18.254[ERROR][None]search_sof_questions:255 - ValueError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)
+2024-02-13 17:57:18.254[DEBUG][None]mdlwr:320 - Request time took 0:00:00.138650 seconds
+2024-02-13 17:58:06.219[INFO][Run main]main:404 - SETTINGS PARSED
+2024-02-13 17:58:06.219[HL][Run main]main:405 - Test highlighting!
+2024-02-13 17:58:06.233[INFO][Startup]app_startup:278 - app_startup
+2024-02-13 17:58:08.115[INFO][None]mdlwr:316 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 17:58:09.097[DEBUG][None]mdlwr:320 - Request time took 0:00:00.981223 seconds
+2024-02-13 17:58:29.082[INFO][Run main]main:404 - SETTINGS PARSED
+2024-02-13 17:58:29.083[HL][Run main]main:405 - Test highlighting!
+2024-02-13 17:58:29.503[INFO][Startup]app_startup:278 - app_startup
+2024-02-13 17:58:31.377[INFO][None]mdlwr:316 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 17:58:31.521[ERROR][None]search_sof_questions:255 - ValueError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)
+2024-02-13 17:58:31.522[DEBUG][None]mdlwr:320 - Request time took 0:00:00.144909 seconds
+2024-02-13 17:58:53.690[INFO][Run main]main:404 - SETTINGS PARSED
+2024-02-13 17:58:53.690[HL][Run main]main:405 - Test highlighting!
+2024-02-13 17:58:53.706[INFO][Startup]app_startup:278 - app_startup
+2024-02-13 17:58:55.137[INFO][None]mdlwr:316 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 17:58:56.154[DEBUG][None]mdlwr:320 - Request time took 0:00:01.017763 seconds
+2024-02-13 18:01:38.197[INFO][Run main]main:404 - SETTINGS PARSED
+2024-02-13 18:01:38.198[HL][Run main]main:405 - Test highlighting!
+2024-02-13 18:01:38.215[INFO][Startup]app_startup:278 - app_startup
+2024-02-13 18:01:39.823[INFO][None]mdlwr:316 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-13 18:01:40.523[DEBUG][None]mdlwr:320 - Request time took 0:00:00.700387 seconds
+2024-02-13 18:02:49.798[INFO][None]mdlwr:316 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 18:02:50.849[DEBUG][None]mdlwr:320 - Request time took 0:00:01.051396 seconds
+2024-02-13 18:02:58.162[INFO][None]mdlwr:316 - Incoming request: /search?smth=foo&tag=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9
+2024-02-13 18:02:58.839[DEBUG][None]mdlwr:320 - Request time took 0:00:00.677077 seconds
+2024-02-13 18:03:03.016[INFO][None]mdlwr:316 - Incoming request: /diag
+2024-02-13 18:03:03.019[DEBUG][None]mdlwr:320 - Request time took 0:00:00.003000 seconds
+2024-02-13 18:03:04.893[INFO][None]mdlwr:316 - Incoming request: /diag
+2024-02-13 18:03:04.894[DEBUG][None]mdlwr:320 - Request time took 0:00:00.000998 seconds
+2024-02-13 18:03:41.707[INFO][None]mdlwr:316 - Incoming request: /search?tag=closure&tag=python&smth=foo
+2024-02-13 18:03:43.326[DEBUG][None]mdlwr:320 - Request time took 0:00:01.619261 seconds
+2024-02-13 18:06:12.746[INFO][None]app_shutdown:286 - app_shutdown
+2024-02-13 18:06:17.855[INFO][Run main]main:404 - SETTINGS PARSED
+2024-02-13 18:06:17.856[HL][Run main]main:405 - Test highlighting!
+2024-02-13 18:06:17.873[INFO][Startup]app_startup:278 - app_startup
+2024-02-13 18:06:23.426[INFO][None]mdlwr:316 - Incoming request: /search?tag=python&smth=foo
+2024-02-13 18:06:24.450[DEBUG][None]mdlwr:320 - Request time took 0:00:01.023933 seconds

@@ -247,6 +247,8 @@ async def search_sof_questions(query_tag: str) -> typing.Any | None:
         response.raise_for_status()
     except httpx.HTTPStatusError as e:
         logger.error(f"HTTPStatusError: {e}")
+    except httpx.RequestError as e:
+        logger.error(f"RequestError: {e}")
     except httpx.HTTPError as e:
         logger.error(f"HTTPError: {e}")
     except ValueError as e:
@@ -262,8 +264,20 @@ async def search_sof_questions(query_tag: str) -> typing.Any | None:
 # endregion
 
 # region Extraction
-async def extract_info(tag_answers: list):
-    pass
+async def extract_info(tag_answers):
+    """
+    В результатах поиска интересует полный список тегов (поле tags) по каждому
+    вопросу, а также был ли дан на вопрос ответ.
+    :param tag_answers:
+    :return:
+    """
+    try:
+        stats: dict[str:(list | int)] = {'tags': list(), 'answered_count': 0}
+        for item in tag_answers['items']:
+            pass
+    except KeyError as ke:
+        logger.error(f'{ke}')
+    return tag_answers.get('items')
 
 
 # endregion
@@ -340,8 +354,8 @@ def normal_app() -> FastAPI:
         results = []
         for tg in tag:
             tag_answers = await search_sof_questions(tg)
-            # await extract_info(tag_answers)
-            results.append(tag_answers)
+            exc_info = await extract_info(tag_answers)
+            results.append(exc_info)
         return f'Requested: {tag}, answers: {results}'
 
     @fastapi_app.get("/diag")
@@ -416,8 +430,11 @@ def main():
                           max_keepalive_connections=settings.max_alive_requests,
                           keepalive_expiry=settings.keep_alive)
     global aclient
-    # aclient = httpx.AsyncClient(limits=limits, verify=True)
-    aclient = httpx.AsyncClient(limits=limits, verify=False)
+    proxy = os.getenv('HTTP_PROXY')
+    if proxy:
+        aclient = httpx.AsyncClient(limits=limits, proxy=proxy, verify=False)
+    else:
+        aclient = httpx.AsyncClient(limits=limits)
 
     try:
         # disabled duplicate logs (uvicorn logs)
