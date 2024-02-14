@@ -4,3 +4,4 @@ logs
 .idea
 .xml
 .iml
+/jsonify.json
