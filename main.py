@@ -1,6 +1,39 @@
 """
 Основной скрипт для запуска
 SOF_stats - Маркин Андрей, 02.2024
+
+Задача:
+1. Обслуживать HTTP запросы по URL "/search". В параметрах запроса передается
+параметр "tag", содержащий ключевой тэг для поиска. Параметров может быть
+несколько, в этом случае мы работаем с несколькими ключевыми тэгами. Пример
+"http://localhost:8080/search?tag=clojure&tag=scala". Предполагаем, что клиент будет
+передавать только алфавитно-цифровые запросы в ASCII. Однако, наличие
+корректной поддержки русского языка в кодировке UTF-8 будет плюсом.
+2. Сервис должен обращаться к REST API StackOverflow для поиска (документация по
+API https://api.stackexchange.com/docs/search). В случае, если ключевых слов
+передано больше одного, запросы должны выполняться параллельно (по одному
+HTTP запросу на ключевое слово). Должно быть ограничение на максимальное
+количество одновременных HTTP-соединений, это значение нельзя превышать. Если
+ключевых слов больше, нужно организовать очередь обработки так, чтобы более
+указанного количество соединений не открывалось.
+3. По каждому тэгу ищем только первые 100 записей, отсортированных по дате
+создания. Пример запроса к API: https://api.stackexchange.com/2.2/search?
+pagesize=100&order=desc&sort=creation&tagged=clojure&site=stackoverflow. Можно
+использовать любые дополнительные параметры запроса, если это необходимо.
+4. В результатах поиска интересует полный список тегов (поле tags) по каждому
+вопросу, а также был ли дан на вопрос ответ.
+5. В результате работы запроса должна быть возвращена суммарная статистика по
+всем тэгам - сколько раз встречался тег во всех вопросах и сколько раз на вопрос,
+содержащий тэг, был дан ответ.
+6. Результат должен быть представлен в формате JSON. Выдача ответа с человекочитаемым форматированием (pretty print)
+будет рассматриваться как плюс. Пример
+ответа:
+{
+"clojure": { "total": 173, "answered": 54},
+"python": { "total": 100, "answered": 9}
+"scala": { "total": 193, "answered": 193}
+}
+
 тестовый запрос:
 http://127.0.0.1:7006/search?tag=closure&tag=python&smth=foo&tag=Русский2
 
@@ -44,245 +77,46 @@ rotation_size = "250 MB" # размер лога для начала ротац�
 retention_time = 5 # время в днях до начала ротации
 
 """
+
 import asyncio
 import os
-import tomllib
 import typing
+from datetime import datetime, timedelta
+from typing import List
 
 import httpx
 import loguru
 import uvicorn
-from json import JSONDecodeError
-from asyncio import Queue
-from typing import List
-from datetime import datetime, timedelta
-from colorama import Fore, Back, Style  # colors for custom logger level
-from functools import cache  # cache decorator for get_settings()
-from sys import stderr  # for setting up logger
-from pydantic import BaseModel
 from fastapi import FastAPI, Query
 from loguru import logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-DEFAULT_CONFIG_PATH = 'config_default.toml'  # путь к файлу конфига
-TEST_CONFIG_PATH = 'test_config.toml'  # путь к тестовому файлу конфига
-WAR_CONFIG_PATH = 'config.toml'  # путь к боевому файлу конфига
-SOF_URL = "https://api.stackexchange.com/2.2/search?pagesize=100&order=desc&sort=creation&tagged={0}&site=stackoverflow"
-VERSION_PATH = 'version'  # путь к файлу версии
+from src.config import get_settings, logger_set_up, Settings
+from src.data_extractor import extract_info
+from src.requester import search_sof_questions
 
 
 # TODO: set default values in Swagger documentation
 # TODO: test limit connections with Postman somehow
-# region Config ready
-
-class Settings(BaseModel):
-    """ Модель pydantic, валидирующая конфиг """
-    # TODO: add constraints? (use pydantic_settings)
-    # TODO: add timeouts for requests
-    service_name: str = 'StackOverFlow_stats'  # захардкожено
-    version: str  # из файла с версией в корне проекта (подтягивается в config.py)
-
-    # формат и цвета логов
-    log_format: str = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>[<level>{level}</level>]" \
-                      "<cyan>[{extra[object_id]}]</cyan>" \
-                      "<magenta>{function}</magenta>:" \
-                      "<cyan>{line}</cyan> - <level>{message}</level>"
-
-    # app
-    # project_path: str = 'opt/StackOverFlow_stats' # путь проекта от корня внутри будущего докер контейнера
-    self_api_port: int  # порт для FastAPI сервера
-    self_api_host: str = '127.0.0.1'  # адрес для FastAPI сервера
-    env_mode: str = 'TEST'  # среда в которой запускается проект
-    stop_delay: int = 10  # задержка перед закрытием
-
-    # network
-    max_requests: int = 1  # максимальное количество запросов к stackoverflow
-    max_alive_requests: int = 1  # максимальное количество активных (keep-alive) запросов к stackoverflow
-    keep_alive: int = 5  # время в секундах для keep-alive
-
-    # logger
-    log_console: bool = True  # выводить ли лог в консоль
-    debug_mode: bool = True  # в дебаг режиме логи хранятся 3 дня по умолчанию и пишется лог уровня debug
-    rotation_size: str = "500 MB"  # размер в МБ для начала ротации - то есть замены записываемого файла
-    retention_time: int = 5  # время для начала ротации в днях
 
 
-@cache
-def get_settings(_config_path: str = DEFAULT_CONFIG_PATH,
-                 _version_path: str = VERSION_PATH) -> Settings:
+async def process_tag(tag) -> dict:
     """
-    Cacheable function (for each module actually runs only once) that returns dict of settings,
-    read from .toml file and transformed into one - level dict.
-    """
-    print(f'Зарегистрирован вызов get_settings(), cache info: {get_settings.cache_info()}')
-    if not _config_path:
-        if os.name == 'nt':  # WINDOWS
-            _config_path = DEFAULT_CONFIG_PATH
-        else:  # UNIX
-            _config_path = WAR_CONFIG_PATH
-
-    config = Config(_config_path, _version_path)
-    return config.settings
-
-
-class ConfigError(OSError):
-    """Raised when smth in config.toml is wrong"""
-    pass
-
-
-def load_toml(config_path, use_env: bool = False) -> dict:
-    """ TOML config file related stuff """
-
-    # путь переменной из окружения имеет приоритет (if use_env is True)
-    if use_env and "SOF_STATS_CONFIG" in os.environ:
-        config_path = os.environ["SOF_STATS_CONFIG"]
-        print(f"Переменная окружения SOF_STATS_CONFIG найдена, значение: {config_path}")
-
-    if not os.path.isfile(config_path):  # если не валидный путь, то выйти
-        print(f"Конфигурационный файл {config_path} не найден, выхожу...")
-        # Raise error and just quit the app. There is no best solution here - the alternative would be to use
-        # hard-coded values of settings
-        raise FileNotFoundError
-
-    print(f"Использую конфигурационный файл: {config_path}")
-    config = {}
-    with open(config_path, mode='rb') as f:  # binary mode is required for TOML, but it may be unsafe
-        data = tomllib.load(f)
-        # print("LOADED TOML", f"data: {data}")
-        if data is None or len(data) == 0:
-            raise ConfigError('Empty config!')
-
-        config.update({k: v for subdict in data.values() for k, v in subdict.items()})
-
-    print("load_toml result", f"data: {config}")
-    return config
-
-
-class Config:
-    """Представляет обьект, парсящий настройки из TOML, версию и хранящий поле settings с полученными данными"""
-
-    def __init__(self, config_path: str = '', version_path: str = ''):
-        # load to self.config dict of settings
-        self.config = load_toml(config_path)
-
-        # parse project version from version file and add to config
-        self.config['version'] = self.get_project_version(version_path)
-
-        # validate settings
-        self.settings = Settings(**self.config)
-
-    def get_project_version(self, version_file_path: str = '') -> str:
-        """ Возврат номера версии приложения """
-        if not version_file_path:
-            # try to find version in project root. Mb actually unsafe
-            version_file_path = os.path.join(self.settings.project_path, "version")
-
-        try:
-            with open(version_file_path, "r") as file:
-                version = file.readline().strip()
-        except FileNotFoundError as fnfe:
-            err = f"Ошибка: не найден файл с номером версии по пути: {version_file_path}. Ошибка: {fnfe}. Выхожу... "
-            print(err)
-            raise FileNotFoundError(err) from fnfe
-        except BaseException as e:
-            err = f"Ошибка: {e}. Выхожу... "
-            print(err)
-            raise Exception(err) from e
-
-        if version is None or version == '':
-            err = f'Ошибка: найден файл {version_file_path}, но не найдена версия! Выхожу...'
-            print(err)
-            raise ValueError(err)
-
-        print(f'Найден файл {version_file_path} с версией {version}. Без ошибок.')
-        return version
-
-
-def logger_set_up(_settings, logs_path: str = "logs/vox_message.log"):
-    """Loguru set up"""
-    # TODO: разделить 3 этапа выполнения по цветам, близким к белому
-    logger.configure(extra={"object_id": "None"})  # Default values if not bind extra variable
-    logger.remove()  # this removes duplicates in the console if we use the custom log format
-    logger.level("HL", no=38, color=Back.MAGENTA, icon="🔺")
-    logger.level(f"TRACE", color="<fg #1b7c80>")  # выставить цвет
-    logger.level(f"SUCCESS", color="<bold><fg #2dd644>")  # выставить цвет
-
-    if _settings.log_console:
-        # for output log in console
-        logger.add(sink=stderr,
-                   format=_settings.log_format,
-                   colorize=True,
-                   enqueue=True,  # for better work of async
-                   level='TRACE')
-
-    logger.add(sink=logs_path,
-               rotation=_settings.rotation_size,
-               compression='gz',
-               retention=_settings.retention_time,
-               format=_settings.log_format,
-               enqueue=True,  # for better work of async
-               level='TRACE' if _settings.env_mode == 'TEST' else 'DEBUG')
-    # level='INFO')
-
-
-# endregion
-
-# region Requests
-async def search_sof_questions(query_tag: str) -> typing.Any | None:
-    """ Search stackoverflow questions """
-    try:
-        if not query_tag:
-            raise ValueError('query_tag cannot be empty or null')
-
-        global aclient
-        response = await aclient.get("https://api.stackexchange.com/2.3/search",
-                                     params={
-                                         "pagesize": 100,
-                                         "order": "desc",
-                                         "sort": "creation",
-                                         "intitle": query_tag,
-                                         "site": "stackoverflow"
-                                     })
-        response.raise_for_status()
-    except httpx.HTTPStatusError as e:
-        logger.error(f"HTTPStatusError: {e}")
-    except httpx.RequestError as e:
-        logger.error(f"RequestError: {e}")
-    except httpx.HTTPError as e:
-        logger.error(f"HTTPError: {e}")
-    except ValueError as e:
-        logger.error(f"ValueError: {e}")
-    except Exception as e:
-        logger.error(f"Exception: {e}")
-    else:  # no errors
-        return response.json()
-    return None
-    # return f'{{{query_tag}: Error({e})}}'  # default answer
-
-
-# endregion
-
-# region Extraction
-async def extract_info(tag_answers):
-    """
-    В результатах поиска интересует полный список тегов (поле tags) по каждому
-    вопросу, а также был ли дан на вопрос ответ.
-    :param tag_answers:
+    Обработать тег
+    :param tag:
     :return:
     """
-    try:
-        stats: dict[str:(list | int)] = {'tags': list(), 'answered_count': 0}
-        for item in tag_answers['items']:
-            pass
-    except KeyError as ke:
-        logger.error(f'{ke}')
-    return tag_answers.get('items')
+    global aclient
+    global settings
+    logger: loguru.Logger = loguru.logger.bind(object_id='Process tag')
+    logger.info(f'Working with tag "{tag}"...')
+    tag_answers = await search_sof_questions(query_tag=tag, aclient=aclient, _settings=settings)
+    tag_stats = await extract_info(tag_answers)
+    return tag_stats
 
 
-# endregion
-
-# region FastAPI main not ready
+# region FastAPI
 async def app_startup():
     """Signal from fastapi"""
     global loop
@@ -323,6 +157,7 @@ def normal_app() -> FastAPI:
         :param request: Запрос входящий (или мб исходящий)
         :param call_next: Следующий ендпоинт, куда в оригинале шел запрос
         """
+        logger: loguru.Logger = loguru.logger.bind(object_id='Middleware')
         req_start_time = datetime.now()
         # вывести адрес ручки без адреса и порта сервиса
         logger.info(f"Incoming request: /{''.join(str(request.url).split('/')[3:])}")
@@ -347,16 +182,18 @@ def normal_app() -> FastAPI:
         :param tag:
         :return:
         """
+        logger: loguru.Logger = loguru.logger.bind(object_id='test2')
         if not is_running:
             s = f'Error: service is shutting down!'
             logger.error(s)
             return s
+
+        # TODO!: переделать так, чтобы поиск был не по одному тегу, а по 2 сразу
         results = []
         for tg in tag:
-            tag_answers = await search_sof_questions(tg)
-            exc_info = await extract_info(tag_answers)
-            results.append(exc_info)
-        return f'Requested: {tag}, answers: {results}'
+            results.append(await process_tag(tg))
+        # return f'Requested: {tag}, answers: {results}'
+        return results
 
     @fastapi_app.get("/diag")
     async def diag() -> dict:  #
@@ -405,16 +242,13 @@ def main():
     """ Initialize globals, such as settings and FastAPI app, do some preparations like logger bind and run uvicorn"""
 
     global settings  # use a global type of link
-    # _win_config = constants.DEFAULT_CONFIG_PATH
-    # _win_version = constants.DEFAULT_VERSION_PATH
     settings = get_settings()
-    # settings = get_settings()
 
     logger_set_up(settings)
     # logger.bind(object_id=os.path.basename(__file__))
     logger: loguru.Logger = loguru.logger.bind(object_id='Run main')
     logger.info("SETTINGS PARSED", f"data: {settings}")
-    logger.log("HL", "Test highlighting!")
+    # logger.log("HL", "Test highlighting!")
 
     global app  # use global variable
     app = normal_app()
