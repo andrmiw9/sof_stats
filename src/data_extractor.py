@@ -1,10 +1,11 @@
 """
-
+Extract data from list of questions
 """
+
 import loguru
 
 
-async def extract_info(tag_questions):
+async def extract_info(tag_questions: dict) -> dict:
     """
     4. В результатах поиска интересует полный список тегов (поле tags) по каждому
     вопросу, а также был ли дан на вопрос ответ.
@@ -14,11 +15,9 @@ async def extract_info(tag_questions):
     6. Результат должен быть представлен в формате JSON. Выдача ответа с человекочитаемым форматированием (pretty print)
     будет рассматриваться как плюс. Пример
     ответа:
-    {
-    "clojure": { "total": 173, "answered": 54},
-    "python": { "total": 100, "answered": 9}
-    "scala": { "total": 193, "answered": 193}
-    }
+    {"clojure": {"total": 173, "answered": 54},
+    "python": {"total": 100, "answered": 9}
+    "scala": {"total": 193, "answered": 193}}
     """
     logger: loguru.Logger = loguru.logger.bind(object_id='Data extraction')
     try:
@@ -27,11 +26,11 @@ async def extract_info(tag_questions):
         logger.error(f'Can not get items (questions) from SOF response: {ke}')
         return None
 
-    stats: dict[dict[str:int]] = {}
+    stats: dict[dict[str:int]] = dict()
     for question in questions:
-        # logger.debug(f"{question}")
+        # logger.trace(f"{question}")
         try:
-            logger.trace(f"q_id {question['question_id']} in consideration")
+            # logger.trace(f"q_id {question['question_id']} in consideration")
             answered = question['is_answered']
             for tag in question['tags']:
                 if tag in stats:
@@ -43,4 +42,5 @@ async def extract_info(tag_questions):
                     stats[tag]['answered'] += 1
         except KeyError as ke:
             logger.error(f'{ke}')
+    logger.success(f'Extracted info from request!')
     return stats

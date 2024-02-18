@@ -89,7 +89,7 @@ class Config:
             err = f"Ошибка: не найден файл с номером версии по пути: {version_file_path}. Ошибка: {fnfe}. Выхожу... "
             print(err)
             raise FileNotFoundError(err) from fnfe
-        except BaseException as e:
+        except Exception as e:  # jic
             err = f"Ошибка: {e}. Выхожу... "
             print(err)
             raise Exception(err) from e
@@ -103,14 +103,16 @@ class Config:
         return version
 
 
-def logger_set_up(_settings, logs_path: str = "logs/vox_message.log"):
+def logger_set_up(_settings, logs_path: str = "logs/sof_stats.log"):
     """Loguru set up"""
-    # TODO: разделить 3 этапа выполнения по цветам, близким к белому
-    logger.configure(extra={"object_id": "None"})  # Default values if not bind extra variable
     logger.remove()  # this removes duplicates in the console if we use the custom log format
+    logger.configure(extra={"object_id": "None"})  # Default values if not bind extra variable
     logger.level("HL", no=38, color=Back.MAGENTA, icon="🔺")
     logger.level(f"TRACE", color="<fg #1b7c80>")  # выставить цвет
     logger.level(f"SUCCESS", color="<bold><fg #2dd644>")  # выставить цвет
+
+    # dbg_lvl = 'TRACE' if _settings.env_mode == 'TEST' else 'DEBUG'  # debug lvl
+    # lvl = 'DEBUG' if _settings.debug_mode else 'INFO'  # main lvl
 
     if _settings.log_console:
         # for output log in console
@@ -118,7 +120,7 @@ def logger_set_up(_settings, logs_path: str = "logs/vox_message.log"):
                    format=_settings.log_format,
                    colorize=True,
                    enqueue=True,  # for better work of async
-                   level='TRACE')
+                   level=_settings.console_lvl)
 
     logger.add(sink=logs_path,
                rotation=_settings.rotation_size,
@@ -126,5 +128,4 @@ def logger_set_up(_settings, logs_path: str = "logs/vox_message.log"):
                retention=_settings.retention_time,
                format=_settings.log_format,
                enqueue=True,  # for better work of async
-               level='TRACE' if _settings.env_mode == 'TEST' else 'DEBUG')
-    # level='INFO')
+               level=_settings.log_level)

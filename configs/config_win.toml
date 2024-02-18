@@ -1,13 +1,14 @@
 [app]
-#project_path = 'opt/sof_stats' # путь к проекту
+project_path = 'opt/sof_stats' # путь к проекту от корня /
 self_api_port = 7006 # порт фаст апи
 self_api_host = "127.0.0.1" # адрес фаст апи бэка
 env_mode = "TEST" # окружение для запуска
-stop_delay = 1 # задержка перед закрытием
+stop_delay = 3 # задержка перед закрытием
 
 [logger]
+log_level = 'DEBUG' # уровень логирования. По умолчанию TRACE если env_mode TEST, иначе DEBUG
 log_console = true # дублировать логи в консоль
-debug_mode = true # выводить уровень DEBUG (или TRACE)
+console_lvl = 'TRACE'   # уровень логирования для консоли, если log_console True
 rotation_size = "250 MB" # размер лога для начала ротации
 retention_time = 5 # время в днях до начала ротации
 

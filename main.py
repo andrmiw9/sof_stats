@@ -36,84 +36,74 @@ pagesize=100&order=desc&sort=creation&tagged=clojure&site=stackoverflow. Мож�
 
 тестовый запрос:
 http://127.0.0.1:7006/search?tag=closure&tag=python&smth=foo&tag=Русский2
-
-requirements:
-annotated-types==0.6.0
-anyio==4.2.0
-certifi==2024.2.2
-click==8.1.7
-colorama==0.4.6
-fastapi==0.109.2
-h11==0.14.0
-httpcore==1.0.2
-httpx==0.26.0
-idna==3.6
-loguru==0.7.2
-pydantic==2.6.1
-pydantic_core==2.16.2
-sniffio==1.3.0
-starlette==0.36.3
-typing_extensions==4.9.0
-uvicorn==0.27.0.post1
-win32-setctime==1.1.0
-
-config_default:
-[app]
-#project_path = 'opt/vox_message'
-self_api_port = 7006 # порт фаст апи
-self_api_host = "127.0.0.1" # адрес фаст апи бэка
-env_mode = "TEST" # окружение для запуска
-stop_delay = 4 # задержка перед закрытием
-
-[network]
-max_requests = 1 # максимальное количество запросов к stackoverflow
-max_alive_requests = 1  # максимальное количество активных (keep-alive) запросов к stackoverflow
-keep_alive = 5 # время в секундах для keep-alive
-
-[logger]
-log_console = true # дублировать логи в консоль
-debug_mode = true # выводить уровень DEBUG (или TRACE)
-rotation_size = "250 MB" # размер лога для начала ротации
-retention_time = 5 # время в днях до начала ротации
-
 """
 
 import asyncio
 import os
-import typing
 from datetime import datetime, timedelta
-from typing import List
+from typing import Any, List
 
 import httpx
 import loguru
+import orjson
 import uvicorn
 from fastapi import FastAPI, Query
 from loguru import logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from src.config import get_settings, logger_set_up, Settings
+from src.config import Settings, get_settings, logger_set_up
 from src.data_extractor import extract_info
 from src.requester import search_sof_questions
 
 
-# TODO: set default values in Swagger documentation
-# TODO: test limit connections with Postman somehow
+# TODO list:
+# TODO?: write specification for Swagger documentation
+# TODO!: test limit connections with Postman somehow
+# TODO!: add quota check
+# TODO?: check in /search request contains smth diff from alphabet-numeric chars
+# TODO: check async client status once in several seconds
+# TODO?: graceful shutdown + задержка закрытия docker-контейнера
+# TODO?: make custom class with Exception from requester
+# TODO?: add constraints to config model (use pydantic_settings)
 
-
-async def process_tag(tag) -> dict:
+class ORJSONPrettyResponse(JSONResponse):
     """
-    Обработать тег
-    :param tag:
-    :return:
+    Класс для возврата FastAPI Response JSON с человекочитаемым форматированием
+    """
+
+    def render(self, content: Any) -> bytes:
+        """
+        Вернуть ответ от orjson.dumps с человекочитаемым форматированием
+        """
+        return orjson.dumps(
+            content,
+            option=orjson.OPT_NON_STR_KEYS
+                   | orjson.OPT_SERIALIZE_NUMPY
+                   | orjson.OPT_INDENT_2,
+        )
+
+
+async def concat_tags(tags: list[str]) -> dict[str, list]:
+    """
+    Объединить теги в один словарь с общим полем items
+    В одиночной версии: {'items':[...], 'has_more': True, 'quota_max': 300, 'quota_remaining': 294}
+    :param tags: список тегов
+    :return: словарь с полем items где лежат 100 ответов на каждый из переданных тегов
     """
     global aclient
     global settings
-    logger: loguru.Logger = loguru.logger.bind(object_id='Process tag')
-    logger.info(f'Working with tag "{tag}"...')
-    tag_answers = await search_sof_questions(query_tag=tag, aclient=aclient, _settings=settings)
-    tag_stats = await extract_info(tag_answers)
-    return tag_stats
+    logger: loguru.Logger = loguru.logger.bind(object_id='Concat tags')
+    logger.info(f'Working with tags: "{tags}"...')
+
+    tags_answers: dict[str, list] = {'items': list()}
+    for tag in tags:
+        res = await search_sof_questions(query_tag=tag, aclient=aclient, _settings=settings)
+        try:
+            tags_answers['items'].extend(res.get('items'))
+        except Exception as e:
+            logger.error(f"Exception: {e}")
+    return tags_answers
 
 
 # region FastAPI
@@ -122,22 +112,15 @@ async def app_startup():
     global loop
     log: loguru.Logger = loguru.logger.bind(object_id='Startup')
     log.info("app_startup")
-    loop = asyncio.new_event_loop()
+    loop = asyncio.new_event_loop()  # start new async loop for asyncio
 
 
 async def app_shutdown():
     """ Shutdown signal from FastAPI """
-    # TODO: graceful shutdown
-    # TODO: переделать так, чтобы docker-контейнер не закрывался раньше правильного закрытия сервиса
     logger.info("app_shutdown")
     global is_running
     is_running = False
-    # loop = asyncio.get_running_loop()
-
-    # if hasattr(app, 'db_communicator') and isinstance(app.db_communicator, DbCommunicator):
-    #     await app.db_communicator.close_up()
-    # if hasattr(app, 'vox_communicator') and isinstance(app.vox_communicator, VoxCommunicator):
-    #     await app.vox_communicator.close_up()
+    global loop
 
     await asyncio.sleep(settings.stop_delay)
     loop.close()
@@ -169,31 +152,57 @@ def normal_app() -> FastAPI:
 
     @fastapi_app.get("/config")
     async def config() -> Settings | str:
-        """ Returns all settings of service """
+        """ Returns all settings of service. Work in TEST env_mode only! """
         if settings.env_mode == 'TEST':
             return settings
         else:
             return f'Unauthorized access to config'
 
-    @fastapi_app.post('/search')
+    @fastapi_app.post('/search', response_class=ORJSONPrettyResponse)
     async def search(tag: List[str] = Query()):
         """
         Standard stackoverflow for received tags
         :param tag:
         :return:
         """
-        logger: loguru.Logger = loguru.logger.bind(object_id='test2')
+        logger: loguru.Logger = loguru.logger.bind(object_id='Search endpoint')
+
+        # region Checks
+
         if not is_running:
             s = f'Error: service is shutting down!'
             logger.error(s)
             return s
 
-        # TODO!: переделать так, чтобы поиск был не по одному тегу, а по 2 сразу
-        results = []
-        for tg in tag:
-            results.append(await process_tag(tg))
-        # return f'Requested: {tag}, answers: {results}'
-        return results
+        if not tag or len(tag) == 0:
+            s = f'Error: empty tag list!'
+            logger.error(s)
+            return s
+
+        for _tag in tag:
+            if not _tag.isalnum():
+                s = f'Error: tag "{_tag}" is not alphanumeric!'
+                logger.error(s)
+                return s
+        # endregion
+
+        if len(tag) < 2:  # для единичного тега
+            tag_answers = await search_sof_questions(query_tag=tag[0], aclient=aclient, _settings=settings)
+        else:
+            tag_answers = await concat_tags(tags=tag)
+
+        # logger.trace(f'tag_answers: {tag_answers}')  # словарь с полем items
+
+        tag_stats = await extract_info(tag_answers)
+
+        # time1 = time.perf_counter()
+
+        # using custom Response to avoid calling json.dumps in FastAPI JSONResponse
+        return ORJSONPrettyResponse(tag_stats,
+                                    media_type='application/json')
+        # all_time = time.perf_counter() - time1
+        # logger.log("HL", f"{all_time}")
+        # return t
 
     @fastapi_app.get("/diag")
     async def diag() -> dict:  #
@@ -213,10 +222,10 @@ def normal_app() -> FastAPI:
         delta = f"{delta.days}:{hour_count}:{minute_count}:{second_count}"
 
         response = {
-            "res": "ok",
-            "app": f'{settings.service_name}',
-            "version": f'{settings.version}',
-            "uptime": delta,
+            "res"       : "ok",
+            "app"       : f'{settings.service_name}',
+            "version"   : f'{settings.version}',
+            "uptime"    : delta,
             "is_running": is_running
         }
         return response
@@ -246,8 +255,8 @@ def main():
 
     logger_set_up(settings)
     # logger.bind(object_id=os.path.basename(__file__))
-    logger: loguru.Logger = loguru.logger.bind(object_id='Run main')
-    logger.info("SETTINGS PARSED", f"data: {settings}")
+    _logger: loguru.Logger = loguru.logger.bind(object_id='Run main')
+    _logger.info("SETTINGS PARSED", f"data: {settings}")
     # logger.log("HL", "Test highlighting!")
 
     global app  # use global variable
@@ -274,6 +283,7 @@ def main():
         # disabled duplicate logs (uvicorn logs)
         # uvicorn_log_config = uvicorn.config.LOGGING_CONFIG
         # del uvicorn_log_config["loggers"]
+        _logger.trace(f'Main passed, launching uvicorn...')
 
         uvicorn.run(app=f'__main__:app',
                     host=settings.self_api_host,
@@ -281,18 +291,21 @@ def main():
                     log_level="debug", access_log=False)
 
     except KeyboardInterrupt:
-        logger.info("KEYBOARD INTERRUPT MAIN")
+        _logger.info("KEYBOARD INTERRUPT MAIN")
     except Exception as e:
-        logger.error("MAIN ERROR", f"e: {e}")
+        _logger.error("MAIN ERROR", f"e: {e}")
 
 
 if __name__ == '__main__':
-    # global variables declaration
-    start_time: datetime = None
-    settings: Settings = None
+    # global variables declaration (just to list them and also keep track of them)
+    start_time: datetime = None  # just time when service started
+    settings: Settings = None  # app settings
     app: FastAPI = None
+
+    # could be redundant, since it looks like FastAPI stops handling incoming requests immediately
     is_running: bool = None
+
     loop: asyncio.AbstractEventLoop = None
-    limits: httpx.Limits = None
-    aclient: httpx.AsyncClient = None
+    limits: httpx.Limits = None  # limits for httpx, uses config stop_delay setting
+    aclient: httpx.AsyncClient = None  # one async client for all requests for optimizaitons
     main()

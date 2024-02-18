@@ -1,7 +1,7 @@
 """ Вынес в отдельный модуль, тк это часть взаимодействующая с сетью """
 from typing import Any
-import httpx
 
+import httpx
 import loguru
 
 from src.config import get_settings
@@ -18,6 +18,7 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
     :return: None если ошибка, JSON с ответом в случае успеха
     """
     logger: loguru.Logger = loguru.logger.bind(object_id='Search')  # bind logger extra obj for more intuitive logging
+    logger.info(f'Working with tag "{query_tag}"...')
     try:
         if not query_tag:
             raise ValueError('query_tag cannot be empty or null')
@@ -25,10 +26,10 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
         response = await aclient.get("https://api.stackexchange.com/2.3/search",
                                      params={
                                          "pagesize": 100,
-                                         "order": "desc",
-                                         "sort": "creation",
-                                         "intitle": query_tag,
-                                         "site": "stackoverflow"
+                                         "order"   : "desc",
+                                         "sort"    : "creation",
+                                         "intitle" : query_tag,
+                                         "site"    : "stackoverflow"
                                      })
         response.raise_for_status()
     except httpx.HTTPStatusError as e:
@@ -42,6 +43,8 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
     except Exception as e:
         logger.error(f"Exception: {e}")
     else:  # no errors
-        logger.debug(f'Request to SOF went good, resp: {response}')
+        logger.success(f'Request to SOF went good!')
+        # logger.trace(f'Good request response: {response.json()}')
         return response.json()
+    logger.warning(f'Bad request response: {response.json()}')
     return None
