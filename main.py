@@ -58,9 +58,10 @@ from src.requester import search_sof_questions
 
 
 # TODO list:
-# TODO?: write specification for Swagger documentation
-# TODO!: test limit connections with Postman somehow
+# TODO!: Use uvloop instead of asyncio default loop
+# TODO!: collect requests after 1000 quota
 # TODO!: add quota check
+# TODO?: write specification for Swagger documentation
 # TODO?: check in /search request contains smth diff from alphabet-numeric chars
 # TODO: check async client status once in several seconds
 # TODO?: graceful shutdown + задержка закрытия docker-контейнера
@@ -235,10 +236,10 @@ def normal_app() -> FastAPI:
         delta = f"{delta.days}:{hour_count}:{minute_count}:{second_count}"
 
         response = {
-            "res"       : "ok",
-            "app"       : f'{settings.service_name}',
-            "version"   : f'{settings.version}',
-            "uptime"    : delta,
+            "res": "ok",
+            "app": f'{settings.service_name}',
+            "version": f'{settings.version}',
+            "uptime": delta,
             "is_running": is_running
         }
         return response

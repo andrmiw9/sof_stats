@@ -120,7 +120,7 @@ def logger_set_up(_settings, logs_path: str = "logs/sof_stats.log"):
                    format=_settings.log_format,
                    colorize=True,
                    enqueue=True,  # for better work of async
-                   level=_settings.console_lvl)
+                   level=_settings.console_lvl)  # mb backtrace=True?
 
     logger.add(sink=logs_path,
                rotation=_settings.rotation_size,
