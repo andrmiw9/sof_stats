@@ -27,10 +27,42 @@ from src.config import get_settings
 from src.settings_model import Settings
 
 
+class RequestError(Exception):
+    """ Base class for all exceptions that occur at the level of the requester.py """
+
+    def __init__(self, message):
+        self.message = message
+
+
+class BadRequest(RequestError):
+    """ Wrong request - incorrect params for example """
+
+    def __init__(self, message):
+        super().__init__(message)
+        self.error_code = 400  # bad request
+
+
+class BadNetwork(RequestError):
+    """ Something wrong while sending request to SOF server """
+
+    def __init__(self, message):
+        super().__init__(message)
+        self.error_code = 500  # server related problem
+
+
+class BadResponse(Exception):
+    """ Any wrong (not 200 OK) response from StackOverflow """
+
+    def __init__(self, message):
+        super().__init__(message)
+        self.error_code = 502  # SOF server related problem (hopefully)
+
+
 async def search_sof_questions(aclient: httpx.AsyncClient,
                                query_tag: str,
-                               _settings: Settings = get_settings()) -> Any | None:
-    """ Search stackoverflow questions
+                               _settings: Settings = get_settings()) -> Any:
+    """
+    Search stackoverflow questions
     :param _settings: Pydantic модель с настройками приложения
     :param aclient: httpx.AsyncClient object для переиспользования keep-alive соединений и прочих оптимизаций
     :param query_tag: тег, по которому нужно совершить поиск
@@ -40,21 +72,24 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
     logger: loguru.Logger = loguru.logger.bind(object_id='Requester')
     logger.debug(f'Working with tag "{query_tag}"...')
 
-    if _settings.env_mode == 'TEST':
-        log_out = logger.exception
-    else:
-        log_out = logger.error
-    try:
-        if not query_tag:
-            raise ValueError('query_tag cannot be empty or null')
+    if not query_tag:
+        msg = 'query_tag cannot be empty or null'
+        logger.error(msg)
+        raise BadRequest(msg)
 
+    if _settings.env_mode == 'TEST':
+        log_out = logger.exception  # with traceback
+    else:
+        log_out = logger.error  # simple
+
+    try:
         response = await aclient.get(_settings.url,
                                      params={
                                          "pagesize": _settings.pagesize,
-                                         "order": _settings.order,
-                                         "sort": _settings.sort,
-                                         "intitle": query_tag,
-                                         "site": _settings.site
+                                         "order"   : _settings.order,
+                                         "sort"    : _settings.sort,
+                                         "intitle" : query_tag,
+                                         "site"    : _settings.site
                                      })
         response.raise_for_status()
 
@@ -63,26 +98,25 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
         logger.error(f"HTTPStatusError: {e}")  # usually this is like:
         # {"error_id":502,"error_message":"too many requests from this IP, more requests available in 82235 seconds",
         # "error_name":"throttle_violation"}
-    except httpx.ConnectTimeout as e:
-        log_out(f"TimeoutException: {e}")
-    except httpx.ReadTimeout as e:
-        log_out(f"TimeoutException: {e}")
-    except httpx.WriteTimeout as e:
-        log_out(f"TimeoutException: {e}")
+        raise BadResponse(e) from e
     except httpx.PoolTimeout as e:
-        log_out(f"TimeoutException: {e}")
-    except httpx.TimeoutException as e:
-        log_out(f"TimeoutException: {e}")
-    except httpx.NetworkError as e:
-        log_out(f"NetworkError: {e}")
+        msg = 'Try increasing httpx limits!'
+        log_out(f"{msg}  httpx.PoolTimeout: {e}. ")  # requests are waiting for several seconds
+        # for httpx.pool free slot for them. If there are waiting more than timeout time - error raises
+        raise BadNetwork(e) from e
+    except httpx.TransportError as e:
+        log_out(f"TransportError: {e}")
+        raise BadNetwork(e) from e
     except httpx.RequestError as e:
         log_out(f"RequestError: {e}")
+        raise BadNetwork(e) from e
     except httpx.HTTPError as e:
         log_out(f"HTTPError: {e}")
-    except ValueError as e:
-        log_out(f"ValueError: {e}")
+        raise BadNetwork(e) from e
     except Exception as e:
         log_out(f"Exception: {e}")
+        raise Exception(e) from e
+
     else:  # no errors
         logger.debug(f'Tag {query_tag}: request to SOF went good!')
         # logger.trace(f'Good request response: {response.json()}')
@@ -90,8 +124,9 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
 
         items = result['items']  # just additional check
         if not items:
-            logger.warning(f'Tag: {query_tag} - empty response!')
-            return None
+            msg = f'Tag: {query_tag} - empty response!'
+            logger.warning(msg)
+            raise BadResponse(msg)
 
         return result
     logger.warning(f'Bad request response for tag "{query_tag}"')

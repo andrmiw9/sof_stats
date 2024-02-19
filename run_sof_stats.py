@@ -51,24 +51,26 @@ from fastapi import FastAPI, Query
 from loguru import logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+from asyncio import BoundedSemaphore
 
 from src.config import Settings, get_settings, logger_set_up
 from src.data_extractor import extract_info
-from src.requester import search_sof_questions
+from src.requester import RequestError, search_sof_questions
 
 
 # TODO list:
-# TODO!: Use uvloop instead of asyncio default loop
 # TODO!: collect requests after 1000 quota
 # TODO!: add quota check
+# TODO: set up order of tests to test logger init
+# TODO: add tests for api responses
+# TODO: check async client status once in several seconds
+# TODO?: Use uvloop instead of asyncio default loop (5 times faster, but doesnt support Windows, so no testing in Win)
+# TODO?: display only statistics in last several minutes, if highload is expected
 # TODO?: write specification for Swagger documentation
 # TODO?: check in /search request contains smth diff from alphabet-numeric chars
-# TODO: check async client status once in several seconds
 # TODO?: graceful shutdown + задержка закрытия docker-контейнера
 # TODO?: make custom class with Exception from requester
 # TODO?: add constraints to config model (use pydantic_settings)
-# TODO: set up order of tests to test logger init
-# TODO: add tests for api responses
 # TODO?: replace some logger.error funcs with logger.exception for tracebacks (mb only in TEST env_mode)
 
 class ORJSONPrettyResponse(JSONResponse):
@@ -98,12 +100,15 @@ async def concat_tags(tags: list[str]) -> dict[str, list]:
     global aclient
     global settings
     logger: loguru.Logger = loguru.logger.bind(object_id='Concat tags')
-    logger.info(f'Working with tags: "{tags}"...')
+    logger.info(f'Working with tags: len:{len(tags)}, data: "{tags}"...')
 
     tags_answers: dict[str, list] = {'items': list()}
     for tag in tags:
-        res = await search_sof_questions(query_tag=tag, aclient=aclient, _settings=settings)
-        # logger.trace(f'Result: {res}')
+        try:
+            res = await search_sof_questions(query_tag=tag, aclient=aclient, _settings=settings)
+            # logger.trace(f'Result: {res}')
+        except RequestError as e:  # base error for requester.py
+            logger.warning(f"Request to SOF wrong with tag {tag}: {e}")
         if not res:
             logger.trace(f'Tag: {tag} - empty response!')
             continue
@@ -122,6 +127,7 @@ async def app_startup():
     log: loguru.Logger = loguru.logger.bind(object_id='Startup')
     log.info("app_startup")
     loop = asyncio.new_event_loop()  # start new async loop for asyncio
+    loop.set_debug(True if settings.debug_mode else False)  # for more precise errors and tracebacks
 
 
 async def app_shutdown():
@@ -195,13 +201,17 @@ def normal_app() -> FastAPI:
                 return s
         # endregion
 
-        if len(tag) < 2:  # для единичного тега
-            tag_answers = await search_sof_questions(query_tag=tag[0], aclient=aclient, _settings=settings)
-        else:
-            tag_answers = await concat_tags(tags=tag)
+        # if len(tag) < 2:  # для единичного тега
+        #     tag_answers = await search_sof_questions(query_tag=tag[0], aclient=aclient, _settings=settings)
+        # else:
+        #     tag_answers = await concat_tags(tags=tag)
+
+        if len(tag) < 2:  # для единичного тега:
+            tag = [tag]  # create list
+        tag_answers = await concat_tags(tags=tag)  # uniform func
 
         if not tag_answers:
-            s = f'Error: something went wrong with response!'
+            s = f'Error: something went wrong with request / response!'
             logger.error(s)
             return s
 
@@ -236,10 +246,10 @@ def normal_app() -> FastAPI:
         delta = f"{delta.days}:{hour_count}:{minute_count}:{second_count}"
 
         response = {
-            "res": "ok",
-            "app": f'{settings.service_name}',
-            "version": f'{settings.version}',
-            "uptime": delta,
+            "res"       : "ok",
+            "app"       : f'{settings.service_name}',
+            "version"   : f'{settings.version}',
+            "uptime"    : delta,
             "is_running": is_running
         }
         return response
@@ -293,6 +303,9 @@ def main():
     else:
         aclient = httpx.AsyncClient(limits=limits)
 
+    global semaphore
+    semaphore = BoundedSemaphore(value=settings.max_requests)
+
     try:
         # disabled duplicate logs (uvicorn logs)
         # uvicorn_log_config = uvicorn.config.LOGGING_CONFIG
@@ -322,4 +335,5 @@ if __name__ == '__main__':
     loop: asyncio.AbstractEventLoop = None
     limits: httpx.Limits = None  # limits for httpx, uses config stop_delay setting
     aclient: httpx.AsyncClient = None  # one async client for all requests for optimizaitons
+    semaphore: asyncio.BoundedSemaphore = None  # semaphore for manual limiting number of concurrent requests
     main()

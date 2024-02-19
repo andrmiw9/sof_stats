@@ -1,0 +1,6 @@
+tests
+logs
+venv
+configs
+.gitignore
+.dockerignore

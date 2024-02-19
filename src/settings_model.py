@@ -30,9 +30,9 @@ class Settings(BaseModel):
     retention_time: int = 5  # время в днях до начала ротации
 
     # network
-    max_requests: int = 1  # максимальное количество запросов к stackoverflow
-    max_alive_requests: int = 1  # максимальное количество активных (keep-alive) запросов к stackoverflow
-    keep_alive: int = 5  # время в секундах для keep-alive
+    max_requests: int = 1000  # максимальное количество запросов к stackoverflow
+    max_alive_requests: int = 1000  # максимальное количество активных (keep-alive) запросов к stackoverflow
+    keep_alive: int = 15  # время в секундах для keep-alive
     timeout: int = 10  # тайм-аут в секундах для запросов к stackoverflow
 
     # stackoverflow - вынесены в настройки с предположением что они будут изменяться в будущем
