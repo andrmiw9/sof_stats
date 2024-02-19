@@ -10,8 +10,6 @@ from src.config import get_settings, logger_set_up
 from loguru import logger
 
 
-# TODO: set up order of tests to test logger init
-
 def test_passes():
     assert True
 

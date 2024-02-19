@@ -14,33 +14,6 @@ from src.config import get_settings, logger_set_up
 from src.settings_model import Settings
 
 
-@pytest.mark.asyncio
-def test_db_com_stop_unusual():
-    """ Запустить корутины из start_up() и закенселить все"""
-    # TEST start_up()
-    # !!! DONT FORGET TO PRESS CTRL+C OR STOP BUTTON !!!
-
-    settings = get_settings(constants.TEST_CONFIG_PATH, constants.TEST_VERSION_PATH)
-    print(f"Settings OK!")
-    logger_set_up(settings)
-    logger.info(f"Logger OK!")
-    db_communicator = DbCommunicator(settings, q_p, q_s)
-    loop = asyncio.new_event_loop()
-    logger.info(f"Got to try section!")
-    try:
-        loop.create_task(db_communicator.start_up())
-        loop.run_forever()
-    except KeyboardInterrupt as ke:
-        logger.warning(f'Closed by CTRL+C: {ke}')
-    finally:
-        tasks = asyncio.all_tasks(loop)
-        for task in tasks:
-            logger.info(f"canceled task {task}")
-        task.cancel()
-        loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
-        loop.close()
-
-
 # region Fixtures
 
 @pytest.fixture(scope='module')

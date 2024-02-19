@@ -17,19 +17,20 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
     :param query_tag: тег, по которому нужно совершить поиск
     :return: None если ошибка, JSON с ответом в случае успеха
     """
-    logger: loguru.Logger = loguru.logger.bind(object_id='Search')  # bind logger extra obj for more intuitive logging
-    logger.info(f'Working with tag "{query_tag}"...')
+    # bind logger extra obj for more intuitive logging
+    logger: loguru.Logger = loguru.logger.bind(object_id='Requester')
+    logger.debug(f'Working with tag "{query_tag}"...')
     try:
         if not query_tag:
             raise ValueError('query_tag cannot be empty or null')
 
-        response = await aclient.get("https://api.stackexchange.com/2.3/search",
+        response = await aclient.get(_settings.url,
                                      params={
-                                         "pagesize": 100,
-                                         "order"   : "desc",
-                                         "sort"    : "creation",
+                                         "pagesize": _settings.pagesize,
+                                         "order"   : _settings.order,
+                                         "sort"    : _settings.sort,
                                          "intitle" : query_tag,
-                                         "site"    : "stackoverflow"
+                                         "site"    : _settings.site
                                      })
         response.raise_for_status()
     except httpx.HTTPStatusError as e:
@@ -41,10 +42,17 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
     except ValueError as e:
         logger.error(f"ValueError: {e}")
     except Exception as e:
-        logger.error(f"Exception: {e}")
+        logger.exception(f"Exception: {e}")
     else:  # no errors
-        logger.success(f'Request to SOF went good!')
+        logger.debug(f'Tag {query_tag}: request to SOF went good!')
         # logger.trace(f'Good request response: {response.json()}')
-        return response.json()
+        result = response.json()
+
+        items = result['items']  # just additional check
+        if not items:
+            logger.warning(f'Tag: {query_tag} - empty response!')
+            return None
+
+        return result
     logger.warning(f'Bad request response: {response.json()}')
     return None

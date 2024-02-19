@@ -1,29 +1,26 @@
-"""
-Extract data from list of questions
-"""
+""" Extract data from list of questions """
+from typing import List
 
 import loguru
 
 
-async def extract_info(tag_questions: dict) -> dict:
+async def extract_info(tag_questions: dict, tags: List[str] = None) -> dict | None:
     """
-    4. В результатах поиска интересует полный список тегов (поле tags) по каждому
-    вопросу, а также был ли дан на вопрос ответ.
-    5. В результате работы запроса должна быть возвращена суммарная статистика по
-    всем тэгам (всем найденным по вопросу) - сколько раз встречался тег во всех вопросах и сколько раз на вопрос,
-    содержащий тэг, был дан ответ.
-    6. Результат должен быть представлен в формате JSON. Выдача ответа с человекочитаемым форматированием (pretty print)
-    будет рассматриваться как плюс. Пример
-    ответа:
-    {"clojure": {"total": 173, "answered": 54},
-    "python": {"total": 100, "answered": 9}
-    "scala": {"total": 193, "answered": 193}}
+    Извлекает инфу из входного словаря вопросов по тегам и возвращает статистику в формате dict.
     """
-    logger: loguru.Logger = loguru.logger.bind(object_id='Data extraction')
+    logger: loguru.Logger = loguru.logger.bind(object_id='Data extractor')
+
+    # if not tag_questions:
+    #
+    #     return None
+
     try:
         questions = tag_questions['items']
+    except TypeError as te:
+        logger.error(f'Got None input tag_questions: {te}. Returning...')
+        return None
     except KeyError as ke:
-        logger.error(f'Can not get items (questions) from SOF response: {ke}')
+        logger.error(f'Can not get items (questions) from SOF response: {ke}. Returning...')
         return None
 
     stats: dict[dict[str:int]] = dict()
@@ -31,7 +28,9 @@ async def extract_info(tag_questions: dict) -> dict:
         # logger.trace(f"{question}")
         try:
             # logger.trace(f"q_id {question['question_id']} in consideration")
-            answered = question['is_answered']
+
+            # just to not catch error here. Hopefully this would not go so wrong that is_answered is missing
+            answered = question.get('is_answered', False)
             for tag in question['tags']:
                 if tag in stats:
                     stats[tag]['total'] += 1
@@ -42,5 +41,8 @@ async def extract_info(tag_questions: dict) -> dict:
                     stats[tag]['answered'] += 1
         except KeyError as ke:
             logger.error(f'{ke}')
-    logger.success(f'Extracted info from request!')
+    if tags:
+        logger.debug(f'Tags {tags}: extracted info from {len(questions)} questions!')
+    else:
+        logger.debug(f'Extracted info from {len(questions)} questions!')
     return stats

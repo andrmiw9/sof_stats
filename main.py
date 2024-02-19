@@ -66,6 +66,9 @@ from src.requester import search_sof_questions
 # TODO?: graceful shutdown + задержка закрытия docker-контейнера
 # TODO?: make custom class with Exception from requester
 # TODO?: add constraints to config model (use pydantic_settings)
+# TODO: set up order of tests to test logger init
+# TODO: add tests for api responses
+# TODO?: replace some logger.error funcs with logger.exception for tracebacks (mb only in TEST env_mode)
 
 class ORJSONPrettyResponse(JSONResponse):
     """
@@ -99,10 +102,15 @@ async def concat_tags(tags: list[str]) -> dict[str, list]:
     tags_answers: dict[str, list] = {'items': list()}
     for tag in tags:
         res = await search_sof_questions(query_tag=tag, aclient=aclient, _settings=settings)
+        # logger.trace(f'Result: {res}')
+        if not res:
+            logger.trace(f'Tag: {tag} - empty response!')
+            continue
+
         try:
-            tags_answers['items'].extend(res.get('items'))
+            tags_answers['items'].extend(res['items'])
         except Exception as e:
-            logger.error(f"Exception: {e}")
+            logger.error(f"Smth wrong with tag {tag}: {e}")
     return tags_answers
 
 
@@ -121,9 +129,9 @@ async def app_shutdown():
     global is_running
     is_running = False
     global loop
-
     await asyncio.sleep(settings.stop_delay)
-    loop.close()
+    await aclient.aclose()  # close httpx.AsyncClient
+    loop.close()  # close asyncio AbstractEventLoop
 
 
 def normal_app() -> FastAPI:
@@ -191,12 +199,17 @@ def normal_app() -> FastAPI:
         else:
             tag_answers = await concat_tags(tags=tag)
 
+        if not tag_answers:
+            s = f'Error: something went wrong with response!'
+            logger.error(s)
+            return s
+
         # logger.trace(f'tag_answers: {tag_answers}')  # словарь с полем items
 
-        tag_stats = await extract_info(tag_answers)
+        tag_stats = await extract_info(tag_answers, tag)
 
         # time1 = time.perf_counter()
-
+        logger.success(f'Request with tags {tag} done!')
         # using custom Response to avoid calling json.dumps in FastAPI JSONResponse
         return ORJSONPrettyResponse(tag_stats,
                                     media_type='application/json')
