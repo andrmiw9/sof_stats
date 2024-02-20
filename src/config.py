@@ -25,7 +25,7 @@ def get_settings(_config_path: str = constants.DEFAULT_CONFIG_PATH,
             _config_path = constants.WAR_CONFIG_PATH
 
     config = Config(_config_path, _version_path)
-    if config.settings.env_mode == 'TEST':
+    if config.settings.env_mode != 'PROD':
         print(f'Был зарегистрирован вызов get_settings(), cache info: {get_settings.cache_info()}')
     return config.settings
 
@@ -68,7 +68,7 @@ class Config:
 
     def __init__(self, config_path: str = '', version_path: str = ''):
         # load to self.config dict of settings
-        self.config = load_toml(config_path)
+        self.config = load_toml(config_path, use_env=True)
 
         # parse project version from version file and add to config
         self.config['version'] = self.get_project_version(version_path)

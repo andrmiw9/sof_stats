@@ -53,18 +53,18 @@ from loguru import logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from src import constants
 from src.config import Settings, get_settings, logger_set_up
 from src.data_extractor import extract_info, ExtractionError
 from src.requester import RequestError, search_sof_questions
 
 
 # TODO list:
-# TODO!: collect requests after 1000 quota
-# TODO!: add quota check
 # TODO: set up order of tests to test logger init
 # TODO: add tests for api responses - they are tested manually at the moment
 # TODO: check async client status once in several seconds
 # TODO: separate http request to StackOverflow params to a specific pydantic model to validate them
+# TODO: check if port written in settings is available
 # TODO?: check 'items' field for convenience handling from all places
 # TODO?: Use uvloop instead of asyncio default loop (5 times faster, but doesnt support Windows, so no testing in Win)
 # TODO?: display only statistics in last several minutes, if highload is expected (clearer logs)
@@ -205,6 +205,15 @@ def normal_app() -> FastAPI:
         #     tag_answers = await search_sof_questions(query_tag=tag[0], aclient=aclient, _settings=settings)
         # else:
         #     tag_answers = await concat_tags(tags=tag)
+        logger.trace(f'Tags {tag} are waiting for Semaphore '
+                     f'(around {semaphore._value} of {settings.max_requests} free)...')
+        await semaphore.acquire()  # manually awaiting - this restricts simultaneous requests count
+        logger.trace(f'Tags {tag} acquired Semaphore!')
+
+        if not is_running:  # check again if service is stopping
+            s = f'Error: service is shutting down!'
+            logger.error(s)
+            raise HTTPException(status_code=503, detail=s)  # service unavailable
 
         if len(tag) < 2:  # для единичного тега:
             tag = [tag]  # create list
@@ -217,6 +226,13 @@ def normal_app() -> FastAPI:
             # return str(e)
             raise HTTPException(status_code=e.error_code, detail=str(e))
             # return msg
+        finally:
+            try:
+                semaphore.release()
+                logger.trace(f'Tags {tag} released Semaphore!')
+            except ValueError:
+                # semaphore was already released
+                pass
 
         if not tag_answers:
             s = f'Error: something went wrong with request / response!'
@@ -253,10 +269,10 @@ def normal_app() -> FastAPI:
         delta = f"{delta.days}:{hour_count}:{minute_count}:{second_count}"
 
         response = {
-            "res": "ok",
-            "app": f'{settings.service_name}',
-            "version": f'{settings.version}',
-            "uptime": delta,
+            "res"       : "ok",
+            "app"       : f'{settings.service_name}',
+            "version"   : f'{settings.version}',
+            "uptime"    : delta,
             "is_running": is_running
         }
         return response
@@ -282,7 +298,11 @@ def main():
     """ Initialize globals, such as settings and FastAPI app, do some preparations like logger bind and run uvicorn"""
 
     global settings  # use a global type of link
-    settings = get_settings()
+    war_config = constants.WAR_CONFIG_PATH
+    # win_config = constants.WAR_CONFIG_PATH
+    config = war_config
+
+    settings = get_settings(_config_path=config)  # if SOF_STATS_CONFIG is in env variables, it will be used
 
     logger_set_up(settings)
     # logger.bind(object_id=os.path.basename(__file__))
@@ -304,10 +324,12 @@ def main():
                           max_keepalive_connections=settings.max_alive_requests,
                           keepalive_expiry=settings.keep_alive)
     global aclient
-    proxy = os.getenv('HTTP_PROXY')
+    proxy = os.getenv('HTTP_PROXY')  # get proxy from env, if it here
     if proxy:
+        logger.info(f'Got HTTP_PROXY env variable. Using proxy {proxy}')
         aclient = httpx.AsyncClient(limits=limits, proxy=proxy, verify=False)
     else:
+        logger.info(f'Running without proxy')
         aclient = httpx.AsyncClient(limits=limits)
 
     global semaphore

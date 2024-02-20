@@ -60,7 +60,7 @@ class UnsuccessfulRequest(RequestError):
 
 async def search_sof_questions(aclient: httpx.AsyncClient,
                                query_tag: str,
-                               _settings: Settings = get_settings()) -> Any:
+                               _settings: Settings) -> Any:
     """
     Search stackoverflow questions
     :param _settings: Pydantic модель с настройками приложения
@@ -70,6 +70,12 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
     """
     # bind logger extra obj for more intuitive logging
     logger: loguru.Logger = loguru.logger.bind(object_id='Requester')
+
+    if not _settings:
+        msg = 'Settings not found!'
+        logger.error(msg)
+        raise FileNotFoundError(msg)
+
     logger.debug(f'Working with tag "{query_tag}"...')
 
     if not query_tag:
@@ -86,10 +92,10 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
         response = await aclient.get(_settings.url,
                                      params={
                                          "pagesize": _settings.pagesize,
-                                         "order": _settings.order,
-                                         "sort": _settings.sort,
-                                         "intitle": query_tag,
-                                         "site": _settings.site
+                                         "order"   : _settings.order,
+                                         "sort"    : _settings.sort,
+                                         "intitle" : query_tag,
+                                         "site"    : _settings.site
                                      })
         response.raise_for_status()
 
@@ -110,7 +116,7 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
             if sof_code == 502:
                 # 429 Too Many Requests - SOF забанил IP сервера на 24ч скорее всего
                 er_msg = response.json()['error_message']
-                logger.trace(f'Raising 429 error...')
+                logger.warning(f'Raising 429 error...')
                 raise UnsuccessfulRequest(f'StackOverflow error: {er_msg}', error_code=429) from e
             else:
                 logger.warning(f'Tag: "{query_tag}", failed to fetch response.status_code')
