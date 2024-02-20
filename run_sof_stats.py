@@ -40,6 +40,7 @@ http://127.0.0.1:7006/search?tag=closure&tag=python&smth=foo&tag=Русский2
 
 import asyncio
 import os
+from asyncio import BoundedSemaphore
 from datetime import datetime, timedelta
 from typing import Any, List
 
@@ -47,14 +48,13 @@ import httpx
 import loguru
 import orjson
 import uvicorn
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from loguru import logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from asyncio import BoundedSemaphore
 
 from src.config import Settings, get_settings, logger_set_up
-from src.data_extractor import extract_info
+from src.data_extractor import extract_info, ExtractionError
 from src.requester import RequestError, search_sof_questions
 
 
@@ -65,6 +65,7 @@ from src.requester import RequestError, search_sof_questions
 # TODO: add tests for api responses - they are tested manually at the moment
 # TODO: check async client status once in several seconds
 # TODO: separate http request to StackOverflow params to a specific pydantic model to validate them
+# TODO?: check 'items' field for convenience handling from all places
 # TODO?: Use uvloop instead of asyncio default loop (5 times faster, but doesnt support Windows, so no testing in Win)
 # TODO?: display only statistics in last several minutes, if highload is expected (clearer logs)
 # TODO?: write specification for Swagger documentation
@@ -89,12 +90,12 @@ class ORJSONPrettyResponse(JSONResponse):
         )
 
 
-async def concat_tags(tags: list[str]) -> dict[str, list] | RequestError:
+async def concat_tags(tags: list[str]) -> dict[str, list]:
     """
     Объединить теги в один словарь с общим полем items
     В одиночной версии: {'items':[...], 'has_more': True, 'quota_max': 300, 'quota_remaining': 294}
     :param tags: список тегов
-    :return: словарь с полем items где лежат 100 ответов на каждый из переданных тегов
+    :return: словарь с полем items где лежат сколько-то (100) ответов на каждый из переданных тегов
     """
     global aclient
     global settings
@@ -163,15 +164,17 @@ def normal_app() -> FastAPI:
         return response
 
     @fastapi_app.get("/config")
-    async def config() -> Settings | str:
+    async def config() -> Settings:
         """ Returns all settings of service. Work in TEST env_mode only! """
         if settings.env_mode == 'TEST':
             return settings
         else:
-            return f'Unauthorized access to config'
+            msg = f'Unauthorized access to config'
+            logger.warning(msg)
+            raise HTTPException(status_code=401, detail=msg)  # 401 Unauthorized
 
-    @fastapi_app.post('/search', response_class=ORJSONPrettyResponse)
-    async def search(tag: List[str] = Query()):
+    @fastapi_app.post('/search')
+    async def search(tag: List[str] = Query()) -> ORJSONPrettyResponse:
         """
         Standard stackoverflow for received tags
         :param tag:
@@ -184,18 +187,18 @@ def normal_app() -> FastAPI:
         if not is_running:
             s = f'Error: service is shutting down!'
             logger.error(s)
-            return s
+            raise HTTPException(status_code=503, detail=s)  # service unavailable
 
         if not tag or len(tag) == 0:
             s = f'Error: empty tag list!'
             logger.error(s)
-            return s
+            raise HTTPException(status_code=422, detail=s)  # Unprocessable entity
 
         for _tag in tag:
             if not _tag.isalnum():
                 s = f'Error: tag "{_tag}" is not alphanumeric!'
                 logger.error(s)
-                return s
+                raise HTTPException(status_code=422, detail=s)  # Unprocessable entity
         # endregion
 
         # if len(tag) < 2:  # для единичного тега
@@ -205,31 +208,32 @@ def normal_app() -> FastAPI:
 
         if len(tag) < 2:  # для единичного тега:
             tag = [tag]  # create list
+
         try:
             tag_answers = await concat_tags(tags=tag)  # uniform func
         except RequestError as e:  # base error for requester.py
             # msg = f"Request to SOF wrong with tag {tag}: {e}"
             # logger.warning(msg)
-            return str(e)
+            # return str(e)
+            raise HTTPException(status_code=e.error_code, detail=str(e))
             # return msg
 
         if not tag_answers:
             s = f'Error: something went wrong with request / response!'
             logger.error(s)
-            return s
+            raise HTTPException(status_code=500, detail=s)
 
         # logger.trace(f'tag_answers: {tag_answers}')  # словарь с полем items
+        try:
+            tag_stats = await extract_info(tag_answers, tag)
+        except ExtractionError as e:  # TODO!: TEST
+            raise HTTPException(status_code=500, detail=e)
 
-        tag_stats = await extract_info(tag_answers, tag)
-
-        # time1 = time.perf_counter()
         logger.success(f'Request with tags {tag} done!')
+
         # using custom Response to avoid calling json.dumps in FastAPI JSONResponse
         return ORJSONPrettyResponse(tag_stats,
                                     media_type='application/json')
-        # all_time = time.perf_counter() - time1
-        # logger.log("HL", f"{all_time}")
-        # return t
 
     @fastapi_app.get("/diag")
     async def diag() -> dict:  #
