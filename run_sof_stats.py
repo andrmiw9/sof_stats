@@ -62,14 +62,13 @@ from src.requester import RequestError, search_sof_questions
 # TODO!: collect requests after 1000 quota
 # TODO!: add quota check
 # TODO: set up order of tests to test logger init
-# TODO: add tests for api responses
+# TODO: add tests for api responses - they are tested manually at the moment
 # TODO: check async client status once in several seconds
+# TODO: separate http request to StackOverflow params to a specific pydantic model to validate them
 # TODO?: Use uvloop instead of asyncio default loop (5 times faster, but doesnt support Windows, so no testing in Win)
-# TODO?: display only statistics in last several minutes, if highload is expected
+# TODO?: display only statistics in last several minutes, if highload is expected (clearer logs)
 # TODO?: write specification for Swagger documentation
-# TODO?: check in /search request contains smth diff from alphabet-numeric chars
 # TODO?: graceful shutdown + задержка закрытия docker-контейнера
-# TODO?: make custom class with Exception from requester
 # TODO?: add constraints to config model (use pydantic_settings)
 # TODO?: replace some logger.error funcs with logger.exception for tracebacks (mb only in TEST env_mode)
 
@@ -90,7 +89,7 @@ class ORJSONPrettyResponse(JSONResponse):
         )
 
 
-async def concat_tags(tags: list[str]) -> dict[str, list]:
+async def concat_tags(tags: list[str]) -> dict[str, list] | RequestError:
     """
     Объединить теги в один словарь с общим полем items
     В одиночной версии: {'items':[...], 'has_more': True, 'quota_max': 300, 'quota_remaining': 294}
@@ -104,14 +103,12 @@ async def concat_tags(tags: list[str]) -> dict[str, list]:
 
     tags_answers: dict[str, list] = {'items': list()}
     for tag in tags:
-        try:
-            res = await search_sof_questions(query_tag=tag, aclient=aclient, _settings=settings)
-            # logger.trace(f'Result: {res}')
-        except RequestError as e:  # base error for requester.py
-            logger.warning(f"Request to SOF wrong with tag {tag}: {e}")
+        res = await search_sof_questions(query_tag=tag, aclient=aclient, _settings=settings)
+        # logger.trace(f'Result: {res}')
+
         if not res:
             logger.trace(f'Tag: {tag} - empty response!')
-            continue
+            continue  # TODO: check if its a good variant
 
         try:
             tags_answers['items'].extend(res['items'])
@@ -127,7 +124,7 @@ async def app_startup():
     log: loguru.Logger = loguru.logger.bind(object_id='Startup')
     log.info("app_startup")
     loop = asyncio.new_event_loop()  # start new async loop for asyncio
-    loop.set_debug(True if settings.debug_mode else False)  # for more precise errors and tracebacks
+    loop.set_debug(True if settings.env_mode == 'TEST' else False)  # for more precise errors and tracebacks
 
 
 async def app_shutdown():
@@ -208,7 +205,13 @@ def normal_app() -> FastAPI:
 
         if len(tag) < 2:  # для единичного тега:
             tag = [tag]  # create list
-        tag_answers = await concat_tags(tags=tag)  # uniform func
+        try:
+            tag_answers = await concat_tags(tags=tag)  # uniform func
+        except RequestError as e:  # base error for requester.py
+            # msg = f"Request to SOF wrong with tag {tag}: {e}"
+            # logger.warning(msg)
+            return str(e)
+            # return msg
 
         if not tag_answers:
             s = f'Error: something went wrong with request / response!'
@@ -246,10 +249,10 @@ def normal_app() -> FastAPI:
         delta = f"{delta.days}:{hour_count}:{minute_count}:{second_count}"
 
         response = {
-            "res"       : "ok",
-            "app"       : f'{settings.service_name}',
-            "version"   : f'{settings.version}',
-            "uptime"    : delta,
+            "res": "ok",
+            "app": f'{settings.service_name}',
+            "version": f'{settings.version}',
+            "uptime": delta,
             "is_running": is_running
         }
         return response
