@@ -22,8 +22,9 @@ COPY . .
 # В контейнере, в случае пересборки, они всё равно будут удалены.
 #RUN python -m pip install --no-cache-dir -r requirements.txt
 
-# использовать кэш серва, если возможно у него уже есть нужные пакеты
-RUN --mount=type=cache, target=/root/.cache/pip pip install -r requirements.txt
+# использовать кэш серва, если возможно у него уже есть нужные пакеты (нужен BuildKit)
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
+#RUN pip install -r requirements.txt
 # Если нужна прокси стоит её указать --proxy=${HTTP_PROXY}, либо
 # добавить папку distr и закинуть туда все пакеты, предварительно скачав их с интернета
 
@@ -32,4 +33,4 @@ RUN --mount=type=cache, target=/root/.cache/pip pip install -r requirements.txt
 #RUN chmod +x run_from_jenkins.sh
 RUN chmod +x run_sof_stats.py
 
-CMD ["python", "run_vox_message.py"]
+CMD ["python", "run_sof_stats.py"]
