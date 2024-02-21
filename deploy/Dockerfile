@@ -22,9 +22,10 @@ COPY . .
 # В контейнере, в случае пересборки, они всё равно будут удалены.
 #RUN python -m pip install --no-cache-dir -r requirements.txt
 
-# использовать кэш серва, если у него есть нужные пакеты
+# использовать кэш серва, если возможно у него уже есть нужные пакеты
 RUN --mount=type=cache, target=/root/.cache/pip pip install -r requirements.txt
-#RUN --mount=type=cache, target=/root/.cache/pip pip install -r requirements.txt --proxy=${HTTP_PROXY}
+# Если нужна прокси стоит её указать --proxy=${HTTP_PROXY}, либо
+# добавить папку distr и закинуть туда все пакеты, предварительно скачав их с интернета
 
 
 # add rights to execute files
