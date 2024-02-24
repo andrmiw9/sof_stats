@@ -1,7 +1,7 @@
 tests
-configs
 .gitignore
 .venv
+build.sh
 venv
 logs
 .idea
@@ -16,3 +16,4 @@ logs
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+__pycache__

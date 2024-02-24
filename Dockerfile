@@ -28,9 +28,14 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 # Если нужна прокси стоит её указать --proxy=${HTTP_PROXY}, либо
 # добавить папку distr и закинуть туда все пакеты, предварительно скачав их с интернета
 
+# вручную обьявить порт
+#EXPOSE 7006
 
 # add rights to execute files
 #RUN chmod +x run_from_jenkins.sh
 RUN chmod +x run_sof_stats.py
+
+#RUN echo "running ls"
+#RUN ls
 
 CMD ["python", "run_sof_stats.py"]

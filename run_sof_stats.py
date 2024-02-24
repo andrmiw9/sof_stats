@@ -40,6 +40,7 @@ http://127.0.0.1:7006/search?tag=closure&tag=python&smth=foo&tag=Русский2
 
 import asyncio
 import os
+import time
 from asyncio import BoundedSemaphore
 from datetime import datetime, timedelta
 from typing import Any, List
@@ -363,6 +364,8 @@ if __name__ == '__main__':
 
     loop: asyncio.AbstractEventLoop = None
     limits: httpx.Limits = None  # limits for httpx, uses config stop_delay setting
-    aclient: httpx.AsyncClient = None  # one async client for all requests for optimizaitons
+    aclient: httpx.AsyncClient = None  # one async client for all requests for optimizations
     semaphore: asyncio.BoundedSemaphore = None  # semaphore for manual limiting number of concurrent requests
+    # while True:
+    #     time.sleep(15)
     main()

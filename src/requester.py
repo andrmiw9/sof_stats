@@ -134,17 +134,18 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
         # must be not raised since the moment asyncio.Semaphore is implemented in my code
         raise UnsuccessfulRequest(msg, error_code=503) from e  # 503 Service Unavailable, то есть мой сервис перегружен
     except httpx.TimeoutException as e:
-        log_out(f"TransportError: {e}")
-        raise UnsuccessfulRequest(e, error_code=504) from e  # 504 Gateway Timeout - SOF не успел выдать ответ
+        log_out(f"TimeoutException: {e.__repr__()}")
+        raise UnsuccessfulRequest("Probably wrong network configuration. " + str(e.__repr__()),
+                                  error_code=504) from e  # 504 Gateway Timeout - SOF не успел выдать ответ
     except httpx.TransportError as e:
-        log_out(f"TransportError: {e}")
-        raise UnsuccessfulRequest(e) from e  # 502 Bad Gateway - проблема в коммуникации между сервами
+        log_out(f"TransportError: {e.__repr__()}")
+        raise UnsuccessfulRequest(e.__repr__()) from e  # 502 Bad Gateway - проблема в коммуникации между сервами
     except httpx.RequestError as e:
-        log_out(f"RequestError: {e}")
-        raise UnsuccessfulRequest(e) from e  # 502 Bad Gateway
+        log_out(f"RequestError: {e.__repr__()}")
+        raise UnsuccessfulRequest(e.__repr__()) from e  # 502 Bad Gateway
     except httpx.HTTPError as e:
-        log_out(f"HTTPError: {e}")
-        raise UnsuccessfulRequest(e) from e  # 502 Bad Gateway
+        log_out(f"HTTPError: {e.__repr__()}")
+        raise UnsuccessfulRequest(e.__repr__()) from e  # 502 Bad Gateway
     except Exception as e:
         # use exception to traceback since we must have caught all request-related errors already
         logger.exception(f"Exception: {e}")
