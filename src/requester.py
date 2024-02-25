@@ -1,30 +1,13 @@
 """
 Вынес в отдельный модуль, тк это часть взаимодействующая с сетью
-Вводная информация:
-У меня запущен Python скрипт, который реализует FastAPI и uvicorn сервер. Я обращаюсь к нему по POST запросу по
-адресу http://127.0.0.1:7006/search и в теле запроса передаю один или несколько тегов для поиска. После этого мой
-сервис делает запрос с помощью httpx на сайт StackOverflow и ищет там ответы на вопросы, содержащие полученные теги
-или теги.
-Важное примечание: мой сервис использует один общий httpx.AsyncClient для всех запросов, чтобы оптимизировать затраты
-на его создание и выделения памяти вместе httpx.limits: limits = httpx.Limits(max_connections=1,
-                          max_keepalive_connections=1,
-                          keepalive_expiry=5), которые ограничивают количество одновременных запросов и подключений.
-Все работает при ручных тестах.
-Однако сейчас я провел автоматизированное нагрузочное тестирование с помощью Postman и в некоторых случаях получил
-ошибку.
-Когда я делал 1 запрос одновременно, все работало.
-Когда я делал 2 запроса одновременно тоже все работало.
-Однако если я делаю 3 запроса одновременно, то получаю ошибку. ЗАДАНИЕ: Помоги разобрать в ней.
-Вот сокращенный лог ошибки:
 """
 
+from ast import literal_eval
 from typing import Any
 
 import httpx
 import loguru
-import ast
 
-from src.config import get_settings
 from src.settings_model import Settings
 
 
@@ -111,7 +94,7 @@ async def search_sof_questions(aclient: httpx.AsyncClient,
             if not response.status_code == 400:
                 logger.warning(f'Tag "{query_tag}": response status_code is not 400!')
             dict_str = response.content.decode("UTF-8")
-            mydata: dict = ast.literal_eval(dict_str)
+            mydata: dict = literal_eval(dict_str)
             sof_code = mydata.get('error_id')
             if sof_code == 502:
                 # 429 Too Many Requests - SOF забанил IP сервера на 24ч скорее всего

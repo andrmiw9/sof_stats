@@ -40,7 +40,6 @@ http://127.0.0.1:7006/search?tag=closure&tag=python&smth=foo&tag=Русский2
 
 import asyncio
 import os
-import time
 from asyncio import BoundedSemaphore
 from datetime import datetime, timedelta
 from typing import Any, List
@@ -49,14 +48,14 @@ import httpx
 import loguru
 import orjson
 import uvicorn
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from loguru import logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from src import constants
 from src.config import Settings, get_settings, logger_set_up
-from src.data_extractor import extract_info, ExtractionError
+from src.data_extractor import ExtractionError, extract_info
 from src.requester import RequestError, search_sof_questions
 
 
@@ -76,6 +75,7 @@ from src.requester import RequestError, search_sof_questions
 # TODO?: add constraints to config model (use pydantic_settings)
 # TODO?: replace some logger.error funcs with logger.exception for tracebacks (mb only in TEST env_mode)
 
+# noinspection PyPep8
 class ORJSONPrettyResponse(JSONResponse):
     """
     Класс для возврата FastAPI Response JSON с человекочитаемым форматированием
@@ -224,18 +224,14 @@ def normal_app() -> FastAPI:
         try:
             tag_answers = await concat_tags(tags=tag)  # uniform func
         except RequestError as e:  # base error for requester.py
-            # msg = f"Request to SOF wrong with tag {tag}: {e}"
-            # logger.warning(msg)
-            # return str(e)
             raise HTTPException(status_code=e.error_code, detail=str(e))
-            # return msg
         finally:
             try:
                 semaphore.release()
                 logger.trace(f'Tags {tag} released Semaphore!')
             except ValueError:
                 # semaphore was already released
-                pass
+                logger.trace(f'Semaphore was already released!')
 
         if not tag_answers:
             s = f'Error: something went wrong with request / response!'

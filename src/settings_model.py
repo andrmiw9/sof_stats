@@ -1,10 +1,14 @@
+"""
+Pydantic модель, валидирующая конфиг и динамические
+настройки (например версию проекта, которая подтягивается из файлика)
+"""
 from pydantic import BaseModel
 
 
 class Settings(BaseModel):
     """ Модель pydantic, валидирующая конфиг """
 
-    service_name: str = 'StackOverFlow_stats'  # захардкожено
+    service_name: str = 'sof_stats'  # захардкожено
     version: str  # из файла с версией в корне проекта (подтягивается в config.py)
 
     # формат и цвета логов
@@ -15,15 +19,14 @@ class Settings(BaseModel):
 
     # app - общие настройки
     project_path: str = 'opt/sof_stats'  # путь проекта от корня внутри будущего докер контейнера
-    self_api_port: int  # порт для FastAPI сервера
-    self_api_host: str = '127.0.0.1'  # адрес для FastAPI сервера
+    self_api_port: int = 7006  # порт для FastAPI сервера
+    self_api_host: str = '0.0.0.0'  # адрес для FastAPI сервера
     env_mode: str = 'TEST'  # среда в которой запускается проект
     stop_delay: int = 5  # задержка перед закрытием
 
     # logger - настройки логгера
     # уровень логирования. По умолчанию: TRACE если env_mode TEST, иначе DEBUG
     log_level: str = 'TRACE' if env_mode == 'TEST' else 'DEBUG'
-
     log_console: bool = True  # выводить логи в консоль
     console_lvl: str = 'DEBUG'  # уровень логирования в консоль, по умолчанию DEBUG
     rotation_size: str = "500 MB"  # размер в МБ для начала ротации - то есть замены записываемого файла

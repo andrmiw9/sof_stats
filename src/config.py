@@ -1,3 +1,8 @@
+"""
+Модуль парсинг TOML конфиг и получает версию из файла в корне проекта.
+Возвращает экзмемляр настроек Settings (dict, 1-ый уровень вложенности) с помощью
+кэшируемой (по модулям и совпадающим аргументам) функции get_settings()
+"""
 import os
 import tomllib  # parse toml config
 from functools import cache  # @cache decorator
