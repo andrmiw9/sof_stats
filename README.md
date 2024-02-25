@@ -7,19 +7,19 @@ sof_stats
 JSON.
 Пример возврата при ошибке:
 {
-"detail": "Code 429, StackOverflow error: too many requests from this IP, more requests available in 83506 seconds"
+  "detail": "Code 429, StackOverflow error: too many requests from this IP, more requests available in 83506 seconds"
 }
 
 Пример возврата без ошибок:
 {
-"rust": {
-"total": 27,
-"answered": 16
-},
-"rusqlite": {
-"total": 1,
-"answered": 0
-}
+  "rust": {
+    "total": 27,
+    "answered": 16
+  },
+  "rusqlite": {
+    "total": 1,
+    "answered": 0
+  }
 }
 
 Если по какому-то из тегов приходит пустой или плохой ответ, то он пропускается,
