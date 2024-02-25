@@ -26,6 +26,8 @@ docker rm sof_stats_0
 # http://127.0.0.1:7006/search?tag=python&smth=foo - работает
 # 7006 порт - фаст апи, 80 - http запросы, 443 - https запросы
 
+echo "running image..."
+
 docker run -d \
 -p 7006:7006 \
 -p 80:80 \
