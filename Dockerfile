@@ -1,4 +1,5 @@
-FROM python:3.11.7-slim
+#FROM python:3.11.7-slim
+FROM python:3.11.7-alpine
 MAINTAINER ANDREY MARKIN
 
 # часовой пояс
@@ -22,14 +23,14 @@ COPY . .
 # В контейнере, в случае пересборки, они всё равно будут удалены.
 #RUN python -m pip install --no-cache-dir -r requirements.txt
 
-# использовать кэш серва, если возможно у него уже есть нужные пакеты (нужен BuildKit)
+# использовать кэш серва, если возможно у него уже есть нужные пакеты (нужен Docker BuildKit)
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 #RUN pip install -r requirements.txt
 # Если нужна прокси стоит её указать --proxy=${HTTP_PROXY}, либо
 # добавить папку distr и закинуть туда все пакеты, предварительно скачав их с интернета
 
 # вручную обьявить порт
-#EXPOSE 7006
+EXPOSE 7006
 
 # add rights to execute files
 #RUN chmod +x run_from_jenkins.sh

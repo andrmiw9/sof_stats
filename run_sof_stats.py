@@ -66,6 +66,8 @@ from src.requester import RequestError, search_sof_questions
 # TODO: check async client status once in several seconds
 # TODO: separate http request to StackOverflow params to a specific pydantic model to validate them
 # TODO: check if port written in settings is available
+# TODO?: При отсутствии полей tags или is_answered в конкретном вопросе он просто скипается. А по факту надо подгрузить
+#  ещё один реквест. А точнее собрать недостающее кол-во и заново сделать запрос (мб)
 # TODO?: check 'items' field for convenience handling from all places
 # TODO?: Use uvloop instead of asyncio default loop (5 times faster, but doesnt support Windows, so no testing in Win)
 # TODO?: display only statistics in last several minutes, if highload is expected (clearer logs)
